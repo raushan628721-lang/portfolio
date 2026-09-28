@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raushan Kumar | Portfolio</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<header>
+    <a class="logo" href="#home"><span>RK</span> Portfolio</a>
+
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#skills">Skills</a>
+        <a href="#projects">Projects</a>
+        <a href="#resume">Resume</a>
+        <a href="#contact">Contact</a>
+    </nav>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light mode" aria-pressed="false">
+        <span class="theme-icon">☼</span>
+        <span class="theme-text">Light</span>
+    </button>
+</header>
+
+<main>
+<section class="home" id="home">
+
+    <div class="content">
+        <p class="eyebrow"><span></span> Available for opportunities</p>
+        <h3>Hello, I'm</h3>
+        <h1>Raushan Kumar</h1>
+        <h2>Web Developer <span>building for the web.</span></h2>
+
+        <p>
+            I am a passionate Web Developer who loves creating modern,
+            responsive, and user-friendly websites using HTML, CSS,
+            JavaScript, and other web technologies.
+        </p>
+
+        <div class="hero-actions">
+            <a href="#contact" class="btn">Let's work together <span>↗</span></a>
+            <a href="#projects" class="text-link">View projects <span>↓</span></a>
+        </div>
+
+        <div class="hero-meta">
+            <div><strong>01</strong><span>Developer</span></div>
+            <div><strong>03+</strong><span>Years learning</span></div>
+            <div><strong>10+</strong><span>Projects built</span></div>
+        </div>
+
+    </div>
+
+    <div class="image">
+        <div class="profile-frame">
+            <img id="profile-image" src="profile.jpg" alt="Raushan Kumar" onerror="this.style.display='none'; document.querySelector('.profile-placeholder').style.display='grid';">
+            <div class="profile-placeholder">RK</div>
+        </div>
+        <label class="profile-upload" for="profile-upload">Choose profile photo</label>
+        <input id="profile-upload" class="profile-upload-input" type="file" accept="image/*">
+    </div>
+
+</section>
+
+<div class="marquee" aria-label="Areas of expertise">
+    <span>FRONTEND DEVELOPMENT</span><b>✦</b><span>UI IMPLEMENTATION</span><b>✦</b><span>RESPONSIVE DESIGN</span><b>✦</b><span>WEB TECHNOLOGY</span>
+</div>
+
+<section id="about" class="split-section">
+
+<div><div class="section-label">01 / About</div>
+<h2>Curious mind.<br><em>Practical maker.</em></h2></div>
+
+<p>
+I'm Raushan Kumar, a Computer Science student passionate about web
+Development. I enjoy building responsive websites and continuously
+improving my programming skills. I have knowledge of HTML, CSS,
+JavaScript, Java, C Programming, and SQL.
+</p>
+
+</section>
+
+<section id="education" class="muted-section">
+
+<div class="section-label">02 / Education</div>
+<h2>Learning with<br><em>intention.</em></h2>
+
+<div class="education">
+
+<div class="education-card">
+<h3>UG - Magadh University</h3>
+<p>Gaya, Bihar</p>
+<p>Course: BCA</p>
+</div>
+
+<div class="education-card">
+<h3>PG - Pondicherry University</h3>
+<p>Kalapet, Tamil Nadu</p>
+<p>Course: MCA</p>
+</div>
+
+</div>
+
+</section>
+
+<section id="skills">
+
+<div class="section-label">03 / Toolkit</div>
+<h2>Tools I use to<br><em>make things work.</em></h2>
+
+<div class="skills">
+
+<div class="card">HTML</div>
+<div class="card">CSS</div>
+<div class="card">JavaScript</div>
+<div class="card">C Programming</div>
+<div class="card">Java</div>
+<div class="card">SQL</div>
+
+</div>
+
+</section>
+
+<section id="expertise" class="muted-section">
+
+<div class="section-label">04 / Expertise</div>
+<h2>From idea to<br><em>interface.</em></h2>
+
+<div class="expertise">
+
+<div class="expertise-card">
+<h3>Frontend</h3>
+<p>HTML, CSS, JavaScript, responsive interfaces, UI/UX implementation.</p>
+</div>
+
+<div class="expertise-card">
+<h3>Backend</h3>
+<p>Server-side logic, APIs, Java-based applications, and application architecture.</p>
+</div>
+
+<div class="expertise-card">
+<h3>Database</h3>
+<p>SQL database design, data modeling, CRUD operations, and query optimization.</p>
+</div>
+
+<div class="expertise-card">
+<h3>Cloud Deployment</h3>
+<p>Deploying sites and applications to cloud platforms with reliability and scalability.</p>
+</div>
+
+<div class="expertise-card">
+<h3>Design</h3>
+<p>Modern visual design, branding, layout, and user-centered web design.</p>
+</div>
+
+<div class="expertise-card">
+<h3>Tools</h3>
+<p>Version control, development tools, and productivity workflows for efficient projects.</p>
+</div>
+
+</div>
+
+</section>
+
+<section id="projects">
+
+<div class="section-label">05 / Selected work</div>
+<h2>Built with purpose,<br><em>shipped with care.</em></h2>
+
+<div class="projects">
+
+<a class="project" href="projects/static-resume.html">
+<h3>Static Resume Website</h3>
+<p>Responsive personal portfolio created with HTML and CSS.</p>
+<span class="project-tag">HTML / CSS</span>
+</a>
+
+<a class="project" href="projects/shopping.html">
+<h3>Shopping Website</h3>
+<p>Product listing, add-to-cart, and total amount calculation.</p>
+<span class="project-tag">HTML / JS</span>
+</a>
+
+<a class="project" href="projects/calculator.html">
+<h3>Calculator</h3>
+<p>Basic calculator with arithmetic operations and clean UI.</p>
+<span class="project-tag">JAVASCRIPT</span>
+</a>
+
+<a class="project" href="projects/quiz.html">
+<h3>Quiz App</h3>
+<p>Interactive quiz with score calculation and questions.</p>
+<span class="project-tag">INTERACTION</span>
+</a>
+
+<a class="project" href="projects/employee.html">
+<h3>Employee Details</h3>
+<p>Enter employee data and display it in a table format.</p>
+<span class="project-tag">FORM / TABLE</span>
+</a>
+
+<a class="project" href="projects/company.html">
+<h3>Company Website</h3>
+<p>Home page, login, registration, and admin/employee flow.</p>
+<span class="project-tag">WEB APP</span>
+</a>
+
+</div>
+
+</section>
+
+<section id="experience" class="experience-section">
+
+    <div class="experience-wrap">
+
+        <div class="experience-left">
+            <h2 class="exp-title">EXPERIENCE.</h2>
+
+            <div class="exp-item">
+                <h3 class="role">Web Developer</h3>
+                <h4 class="company">Freelance / Project</h4>
+                <p class="exp-desc">Delivered a responsive, interactive web product and Python-backed features; owned frontend implementation, integration, testing, and deployment for a Delhi-based project.</p>
+            </div>
+
+            <div class="timeline-list">
+                <h3>Timeline (Jan–Jul 2026)</h3>
+                <ul>
+                    <li><strong>Jan 2026:</strong> Kickoff — requirements, scope, wireframes.</li>
+                    <li><strong>Feb 2026:</strong> Core UI — static pages and responsive layouts with HTML/CSS.</li>
+                    <li><strong>Mar 2026:</strong> Interactivity — client-side behavior and UX with JavaScript.</li>
+                    <li><strong>Apr 2026:</strong> Backend integration — Python APIs and frontend connections.</li>
+                    <li><strong>May 2026:</strong> Feature completion — forms, validation, and cross-browser fixes.</li>
+                    <li><strong>Jun 2026:</strong> QA &amp; optimization — accessibility, performance, tests.</li>
+                    <li><strong>Jul 2026:</strong> Release &amp; handover — deploy, document, support.</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <aside class="experience-right">
+            <div class="exp-card">
+                <div class="exp-logo">RK</div>
+                <div class="exp-card-body">
+                    <h4>Project / Client</h4>
+                    <p>Jan 2026 — Jul 2026</p>
+                    <p>6 months • Delhi</p>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+</section>
+</main>
+
+<section id="contact">
+
+<div class="section-label"> Contact</div>
+<h2>Have a project<br><em>in mind?</em></h2>
+
+<form enctype="multipart/form-data">
+
+<input type="text" placeholder="Your Name" required>
+
+<input type="email" placeholder="Your Email" required>
+
+<label class="resume-label" for="resume">Upload your resume</label>
+<input id="resume" type="file" accept="application/pdf,.doc,.docx" title="Upload resume (optional)">
+
+<textarea placeholder="Your Message" required></textarea>
+
+<button type="submit">Send Message <span>↗</span></button>
+
+</form>
+
+</section>
+
+<footer>
+
+<p>Raushan Kumar | All Rights Reserved</p>
+
+<div class="footer-social">
+    <a href="https://github.com/YOUR_GITHUB_USERNAME" target="_blank">GitHub</a>
+    <a href="https://www.linkedin.com/in/YOUR_LINKEDIN_USERNAME/" target="_blank">LinkedIn</a>
+    <a href="resume.pdf" target="_blank" download>Resume</a>
+</div>
+
+</footer>
+
+<script>
+const profileUpload = document.querySelector('#profile-upload');
+const profileImage = document.querySelector('#profile-image');
+const profilePlaceholder = document.querySelector('.profile-placeholder');
+const themeToggle = document.querySelector('#theme-toggle');
+
+function setTheme(theme) {
+    const isLight = theme === 'light';
+    document.documentElement.dataset.theme = isLight ? 'light' : 'dark';
+    themeToggle.setAttribute('aria-pressed', String(isLight));
+    themeToggle.setAttribute('aria-label', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+    themeToggle.querySelector('.theme-icon').textContent = isLight ? '☾' : '☼';
+    themeToggle.querySelector('.theme-text').textContent = isLight ? 'Dark' : 'Light';
+    localStorage.setItem('portfolio-theme', isLight ? 'light' : 'dark');
+}
+
+setTheme(localStorage.getItem('portfolio-theme') || 'dark');
+themeToggle.addEventListener('click', () => {
+    setTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
+});
+
+profileUpload.addEventListener('change', () => {
+    const selectedPhoto = profileUpload.files[0];
+    if (!selectedPhoto) return;
+    profileImage.src = URL.createObjectURL(selectedPhoto);
+    profileImage.style.display = 'block';
+    profilePlaceholder.style.display = 'none';
+});
+</script>
+
+</body>
+</html>
