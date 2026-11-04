@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="pbg10" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#181c19"/>
+      <stop offset="100%" stop-color="#111312"/>
+    </linearGradient>
+    <linearGradient id="jsCover" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2b1f0c"/>
+      <stop offset="100%" stop-color="#140f06"/>
+    </linearGradient>
+    <linearGradient id="algoCover" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#091f36"/>
+      <stop offset="100%" stop-color="#030c17"/>
+    </linearGradient>
+    <linearGradient id="dbCover" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3d0c14"/>
+      <stop offset="100%" stop-color="#160306"/>
+    </linearGradient>
+    <linearGradient id="spineShade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#000" stop-opacity="0.7"/>
+      <stop offset="40%" stop-color="#fff" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.4"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="200" fill="url(#pbg10)"/>
+  <rect x="16" y="16" width="368" height="168" rx="8" fill="#141815" stroke="rgba(213,243,107,0.2)"/>
+  <text x="32" y="40" fill="#d5f36b" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700">BOOK EXPLORER (JQUERY $.AJAX)</text>
+  <rect x="268" y="26" width="102" height="22" rx="4" fill="#d5f36b"/>
+  <text x="319" y="41" fill="#111" font-family="'Space Grotesk', sans-serif" font-size="10" font-weight="700" text-anchor="middle">📖 Load Books</text>
+
+  <!-- Book 1: JavaScript Front Page Cover -->
+  <g transform="translate(32, 58)">
+    <rect width="96" height="114" rx="4" fill="url(#jsCover)" stroke="#f5a623" stroke-width="1.2"/>
+    <rect width="8" height="114" rx="2" fill="url(#spineShade)"/>
+    <text x="14" y="16" fill="#f5a623" font-family="'DM Sans', sans-serif" font-size="6" font-weight="800" letter-spacing="1">O'REILLY</text>
+    <text x="52" y="46" font-size="22" text-anchor="middle">🦏</text>
+    <text x="14" y="68" fill="#fff" font-family="'Space Grotesk', sans-serif" font-size="8.5" font-weight="700">JavaScript</text>
+    <text x="14" y="78" fill="#f5a623" font-family="'DM Sans', sans-serif" font-size="7" font-weight="600">The Def. Guide</text>
+    <text x="14" y="90" fill="#bbb" font-family="'DM Sans', sans-serif" font-size="6.5">D. Flanagan</text>
+    <rect x="14" y="96" width="38" height="10" rx="2" fill="#000" fill-opacity="0.5"/>
+    <text x="18" y="103.5" fill="#f5a623" font-family="'DM Sans', sans-serif" font-size="5.5" font-weight="700">7th Edition</text>
+  </g>
+
+  <!-- Book 2: Algorithms (CLRS) Front Page Cover -->
+  <g transform="translate(152, 58)">
+    <rect width="96" height="114" rx="4" fill="url(#algoCover)" stroke="#38bdf8" stroke-width="1.2"/>
+    <rect width="8" height="114" rx="2" fill="url(#spineShade)"/>
+    <text x="14" y="16" fill="#38bdf8" font-family="'DM Sans', sans-serif" font-size="6" font-weight="800" letter-spacing="1">MIT PRESS</text>
+    <text x="52" y="46" font-size="22" text-anchor="middle">🌳</text>
+    <text x="14" y="68" fill="#fff" font-family="'Space Grotesk', sans-serif" font-size="8.5" font-weight="700">Algorithms</text>
+    <text x="14" y="78" fill="#38bdf8" font-family="'DM Sans', sans-serif" font-size="7" font-weight="600">CLRS Textbook</text>
+    <text x="14" y="90" fill="#bbb" font-family="'DM Sans', sans-serif" font-size="6.5">Cormen et al.</text>
+    <rect x="14" y="96" width="38" height="10" rx="2" fill="#000" fill-opacity="0.5"/>
+    <text x="18" y="103.5" fill="#38bdf8" font-family="'DM Sans', sans-serif" font-size="5.5" font-weight="700">4th Edition</text>
+  </g>
+
+  <!-- Book 3: Database Concepts Front Page Cover -->
+  <g transform="translate(272, 58)">
+    <rect width="96" height="114" rx="4" fill="url(#dbCover)" stroke="#fb7185" stroke-width="1.2"/>
+    <rect width="8" height="114" rx="2" fill="url(#spineShade)"/>
+    <text x="14" y="16" fill="#fb7185" font-family="'DM Sans', sans-serif" font-size="6" font-weight="800" letter-spacing="1">McGRAW-HILL</text>
+    <text x="52" y="46" font-size="22" text-anchor="middle">⛵</text>
+    <text x="14" y="68" fill="#fff" font-family="'Space Grotesk', sans-serif" font-size="8.5" font-weight="700">Database</text>
+    <text x="14" y="78" fill="#fb7185" font-family="'DM Sans', sans-serif" font-size="7" font-weight="600">System Concepts</text>
+    <text x="14" y="90" fill="#bbb" font-family="'DM Sans', sans-serif" font-size="6.5">Silberschatz</text>
+    <rect x="14" y="96" width="38" height="10" rx="2" fill="#000" fill-opacity="0.5"/>
+    <text x="18" y="103.5" fill="#fb7185" font-family="'DM Sans', sans-serif" font-size="5.5" font-weight="700">7th Edition</text>
+  </g>
+</svg>

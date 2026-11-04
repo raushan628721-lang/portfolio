@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ex 2: Online Shopping Store | TechGear</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #111312;
+            --paper: #f2f0e9;
+            --muted: #aaa99f;
+            --line: rgba(242, 240, 233, 0.16);
+            --lime: #d5f36b;
+            --card-bg: #181b19;
+            --surface: #202421;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--ink);
+            color: var(--paper);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Sticky Navigation Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(17, 19, 18, 0.94);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
+            padding: 18px 6vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        .nav-left { display: flex; align-items: center; gap: 24px; }
+        .back-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .back-link:hover { color: var(--lime); }
+        .store-brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--paper);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .store-brand span {
+            background: var(--lime);
+            color: var(--ink);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .cart-trigger {
+            background: var(--surface);
+            color: var(--paper);
+            border: 1px solid var(--line);
+            padding: 10px 18px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.2s;
+        }
+        .cart-trigger:hover { border-color: var(--lime); }
+        .cart-badge {
+            background: var(--lime);
+            color: var(--ink);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 99px;
+        }
+
+        /* Banner Hero */
+        .store-hero {
+            padding: 40px 6vw;
+            text-align: center;
+            border-bottom: 1px solid var(--line);
+            background: radial-gradient(circle at 50% 0%, rgba(213,243,107,0.08) 0%, transparent 70%);
+        }
+        .store-hero .lab-tag {
+            color: var(--lime);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .store-hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(32px, 4vw, 52px);
+            letter-spacing: -0.04em;
+            margin-bottom: 12px;
+        }
+        .store-hero p {
+            color: var(--muted);
+            font-size: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Filter Tabs */
+        .controls-bar {
+            padding: 24px 6vw 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .categories {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .cat-btn {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--line);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .cat-btn.active, .cat-btn:hover {
+            background: var(--lime);
+            color: var(--ink);
+            border-color: var(--lime);
+        }
+        .search-box {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            padding: 8px 16px;
+            border-radius: 4px;
+            color: var(--paper);
+            font-size: 13px;
+            width: 240px;
+        }
+        .search-box:focus { outline: none; border-color: var(--lime); }
+
+        /* Product Grid: Exactly 3 products per row */
+        .products-grid {
+            padding: 30px 6vw 60px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 26px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        @media (max-width: 1024px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 650px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .product-card {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: 0.3s;
+            position: relative;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--lime);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+        }
+        .product-badge-flag {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            background: var(--lime);
+            color: var(--ink);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            z-index: 2;
+        }
+        .product-img-wrap {
+            height: 220px;
+            background: #141715;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.4s ease;
+            display: block;
+        }
+        .product-card:hover .product-img {
+            transform: scale(1.08);
+        }
+        .product-info {
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .product-category {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 6px;
+        }
+        .product-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        .product-title:hover { color: var(--lime); }
+        .product-rating {
+            color: #ffd166;
+            font-size: 13px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .product-rating span { color: var(--muted); font-size: 12px; }
+        .product-desc {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 18px;
+            flex-grow: 1;
+        }
+        .product-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+        }
+        .price-wrap { display: flex; flex-direction: column; }
+        .original-price {
+            text-decoration: line-through;
+            color: var(--muted);
+            font-size: 12px;
+        }
+        .current-price {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--lime);
+        }
+        .btn-add {
+            background: var(--lime);
+            color: var(--ink);
+            border: none;
+            padding: 9px 16px;
+            font-weight: 700;
+            font-size: 13px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-add:hover { background: #fff; }
+
+        /* Cart Drawer */
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+        .cart-overlay.active { opacity: 1; pointer-events: auto; }
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: -420px;
+            width: min(100vw, 400px);
+            height: 100vh;
+            background: var(--ink);
+            border-left: 1px solid var(--line);
+            z-index: 210;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.3s ease;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        }
+        .cart-drawer.open { right: 0; }
+        .cart-head {
+            padding: 22px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cart-head h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+        }
+        .cart-close {
+            background: transparent;
+            color: var(--muted);
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .cart-close:hover { color: var(--paper); }
+        .cart-items {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .empty-cart-msg {
+            text-align: center;
+            color: var(--muted);
+            margin: auto;
+            padding: 30px 10px;
+        }
+        .cart-item {
+            display: flex;
+            gap: 14px;
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            padding: 12px;
+            border-radius: 4px;
+            align-items: center;
+        }
+        .cart-item-icon { font-size: 28px; }
+        .cart-item-info { flex-grow: 1; }
+        .cart-item-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+        .cart-item-price { font-size: 13px; color: var(--lime); font-weight: 700; }
+        .cart-item-qty {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+        }
+        .qty-btn {
+            background: var(--surface);
+            color: var(--paper);
+            border: 1px solid var(--line);
+            width: 22px;
+            height: 22px;
+            border-radius: 2px;
+            font-size: 13px;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+        }
+        .cart-item-remove {
+            background: transparent;
+            border: none;
+            color: #ff6b6b;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .cart-footer {
+            padding: 20px;
+            border-top: 1px solid var(--line);
+            background: var(--card-bg);
+        }
+        .cart-summary-line {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+        .cart-summary-line.total {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--paper);
+            border-top: 1px dashed var(--line);
+            padding-top: 12px;
+            margin-top: 10px;
+        }
+        .cart-summary-line.total span:last-child { color: var(--lime); font-family: 'Space Grotesk'; }
+        .btn-checkout {
+            width: 100%;
+            background: var(--lime);
+            color: var(--ink);
+            padding: 14px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: 0.2s;
+        }
+        .btn-checkout:hover { background: #fff; }
+
+        /* Quick View Modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal.open { display: flex; }
+        .modal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--lime);
+            max-width: 550px;
+            width: 100%;
+            border-radius: 8px;
+            padding: 28px;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .modal-close:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-left">
+            <a href="../index.html#projects" class="back-link">
+                ← Back to Portfolio
+            </a>
+            <div class="store-brand">
+                <span>TECH</span> GEAR
+            </div>
+        </div>
+        <button class="cart-trigger" id="cart-btn" onclick="toggleCart(true)">
+            🛒 Cart (<span class="cart-badge" id="cart-count">0</span>)
+        </button>
+    </header>
+
+    <main>
+        <section class="store-hero">
+            <p class="lab-tag">CSCA 514 • Exercise 02</p>
+            <h1>Online Shopping Experience</h1>
+            <p>Explore curated developer hardware, accessories, and tech workspace essentials with live cart calculations.</p>
+        </section>
+
+        <section class="controls-bar">
+            <div class="categories" id="cat-tabs">
+                <button class="cat-btn active" onclick="filterCategory('All', this)">All Products</button>
+                <button class="cat-btn" onclick="filterCategory('Audio', this)">Audio &amp; ANC</button>
+                <button class="cat-btn" onclick="filterCategory('Keyboards', this)">Keyboards</button>
+                <button class="cat-btn" onclick="filterCategory('Displays', this)">Displays</button>
+                <button class="cat-btn" onclick="filterCategory('Accessories', this)">Accessories</button>
+            </div>
+            <input type="text" class="search-box" id="search-input" placeholder="Search gadgets..." oninput="handleSearch()">
+        </section>
+
+        <section class="products-grid" id="products-container">
+            <!-- Dynamic products rendered via JS -->
+        </section>
+    </main>
+
+    <!-- Slide-in Cart -->
+    <div class="cart-overlay" id="cart-overlay" onclick="toggleCart(false)"></div>
+    <aside class="cart-drawer" id="cart-drawer">
+        <div class="cart-head">
+            <h2>Shopping Cart (<span id="drawer-count">0</span>)</h2>
+            <button class="cart-close" onclick="toggleCart(false)">&times;</button>
+        </div>
+        <div class="cart-items" id="cart-items-wrap">
+            <div class="empty-cart-msg">Your shopping cart is currently empty.</div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-summary-line">
+                <span>Subtotal</span>
+                <span id="cart-subtotal">₹0</span>
+            </div>
+            <div class="cart-summary-line">
+                <span>GST (18%)</span>
+                <span id="cart-tax">₹0</span>
+            </div>
+            <div class="cart-summary-line">
+                <span>Shipping</span>
+                <span style="color:var(--lime);">FREE</span>
+            </div>
+            <div class="cart-summary-line total">
+                <span>Total Amount</span>
+                <span id="cart-total">₹0</span>
+            </div>
+            <button class="btn-checkout" onclick="checkout()">Proceed to Checkout ↗</button>
+        </div>
+    </aside>
+
+    <!-- Quick View Modal -->
+    <div class="modal" id="quick-modal">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            {
+                id: 1,
+                title: "Ultra-Linear Mechanical Keyboard",
+                category: "Keyboards",
+                image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=700&q=80",
+                fallbackImage: "../images/prod-keyboard.svg",
+                price: 7499,
+                origPrice: 8999,
+                badge: "Best Seller",
+                rating: "4.9 (128 reviews)",
+                desc: "Hot-swappable custom switches with sound-dampening foam, South-facing RGB, and programmable macros for developers."
+            },
+            {
+                id: 2,
+                title: "Active Noise-Cancelling Headphones",
+                category: "Audio",
+                image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=700&q=80",
+                fallbackImage: "../images/prod-headphones.svg",
+                price: 14990,
+                origPrice: 18990,
+                badge: "Save 21%",
+                rating: "4.8 (95 reviews)",
+                desc: "Studio-grade 40mm beryllium drivers with hybrid active noise cancellation, 45-hour battery life, and spatial audio."
+            },
+            {
+                id: 3,
+                title: "27-inch 4K UHD Developer Display",
+                category: "Displays",
+                image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=700&q=80",
+                fallbackImage: "../images/prod-monitor.svg",
+                price: 28999,
+                origPrice: 34999,
+                badge: "4K IPS",
+                rating: "4.9 (64 reviews)",
+                desc: "99% sRGB color gamut, USB-C 90W power delivery single-cable setup, and anti-glare eye-care matte finish."
+            },
+            {
+                id: 4,
+                title: "Ergonomic Vertical Precision Mouse",
+                category: "Accessories",
+                image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=700&q=80",
+                fallbackImage: "../images/prod-mouse.svg",
+                price: 3499,
+                origPrice: 4299,
+                badge: "Ergo",
+                rating: "4.7 (210 reviews)",
+                desc: "Scientifically tested 57° ergonomic handshake angle that reduces muscle strain, with dual Bluetooth & 2.4GHz connectivity."
+            },
+            {
+                id: 5,
+                title: "Studio USB Condenser Microphone",
+                category: "Audio",
+                image: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=700&q=80",
+                fallbackImage: "../images/prod-mic.svg",
+                price: 5299,
+                origPrice: 6499,
+                badge: "Pro Audio",
+                rating: "4.8 (72 reviews)",
+                desc: "24-bit/96kHz high resolution cardioid pickup pattern, zero-latency headphone monitoring, and tap-to-mute sensor."
+            },
+            {
+                id: 6,
+                title: "100W GaN Dual USB-C Fast Charger",
+                category: "Accessories",
+                image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=700&q=80",
+                fallbackImage: "../images/prod-charger.svg",
+                price: 2499,
+                origPrice: 3199,
+                badge: "GaN III",
+                rating: "4.9 (340 reviews)",
+                desc: "Ultra-compact Gallium Nitride fast charger capable of charging laptop, phone, and tablet simultaneously at top speeds."
+            }
+        ];
+
+        let cart = [];
+        let activeCategory = "All";
+
+        function renderProducts(items) {
+            const container = document.getElementById('products-container');
+            if (items.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 60px; color: var(--muted);">No matching tech gadgets found.</div>';
+                return;
+            }
+            container.innerHTML = items.map(p => `
+                <article class="product-card">
+                    <span class="product-badge-flag">${p.badge}</span>
+                    <div class="product-img-wrap" onclick="openQuickView(${p.id})">
+                        <img src="${p.image}" alt="${p.title}" class="product-img" onerror="this.onerror=null; this.src='${p.fallbackImage}';">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">${p.category}</div>
+                        <h3 class="product-title" onclick="openQuickView(${p.id})">${p.title}</h3>
+                        <div class="product-rating">★ ${p.rating}</div>
+                        <p class="product-desc">${p.desc}</p>
+                        <div class="product-bottom">
+                            <div class="price-wrap">
+                                <span class="original-price">₹${p.origPrice.toLocaleString()}</span>
+                                <span class="current-price">₹${p.price.toLocaleString()}</span>
+                            </div>
+                            <button class="btn-add" onclick="addToCart(${p.id})">
+                                + Add
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function filterCategory(cat, btn) {
+            activeCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            handleSearch();
+        }
+
+        function handleSearch() {
+            const q = document.getElementById('search-input').value.toLowerCase();
+            const filtered = products.filter(p => {
+                const matchCat = activeCategory === 'All' || p.category === activeCategory;
+                const matchQuery = p.title.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q);
+                return matchCat && matchQuery;
+            });
+            renderProducts(filtered);
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            const existing = cart.find(item => item.id === id);
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            updateCart();
+            toggleCart(true);
+        }
+
+        function updateCart() {
+            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cart-count').textContent = totalQty;
+            document.getElementById('drawer-count').textContent = totalQty;
+
+            const wrap = document.getElementById('cart-items-wrap');
+            if (cart.length === 0) {
+                wrap.innerHTML = '<div class="empty-cart-msg">Your shopping cart is currently empty.</div>';
+                document.getElementById('cart-subtotal').textContent = '₹0';
+                document.getElementById('cart-tax').textContent = '₹0';
+                document.getElementById('cart-total').textContent = '₹0';
+                return;
+            }
+
+            let subtotal = 0;
+            wrap.innerHTML = cart.map(item => {
+                const itemTotal = item.price * item.qty;
+                subtotal += itemTotal;
+                return `
+                    <div class="cart-item">
+                        <img src="${item.image}" alt="${item.title}" onerror="this.onerror=null; this.src='${item.fallbackImage}';" style="width:40px;height:40px;border-radius:4px;object-fit:cover;border:1px solid var(--line);flex-shrink:0;">
+                        <div class="cart-item-info">
+                            <div class="cart-item-title">${item.title}</div>
+                            <div class="cart-item-price">₹${item.price.toLocaleString()}</div>
+                            <div class="cart-item-qty">
+                                <button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button>
+                                <span>${item.qty}</span>
+                                <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+                            </div>
+                        </div>
+                        <button class="cart-item-remove" title="Remove" onclick="removeFromCart(${item.id})">&times;</button>
+                    </div>
+                `;
+            }).join('');
+
+            const tax = Math.round(subtotal * 0.18);
+            const total = subtotal + tax;
+
+            document.getElementById('cart-subtotal').textContent = '₹' + subtotal.toLocaleString();
+            document.getElementById('cart-tax').textContent = '₹' + tax.toLocaleString();
+            document.getElementById('cart-total').textContent = '₹' + total.toLocaleString();
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty <= 0) {
+                cart = cart.filter(i => i.id !== id);
+            }
+            updateCart();
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(i => i.id !== id);
+            updateCart();
+        }
+
+        function toggleCart(open) {
+            document.getElementById('cart-drawer').classList.toggle('open', open);
+            document.getElementById('cart-overlay').classList.toggle('active', open);
+        }
+
+        function openQuickView(id) {
+            const p = products.find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('modal-content').innerHTML = `
+                <img src="${p.image}" alt="${p.title}" style="width:100%; height:200px; object-fit:cover; border-radius:6px; margin-bottom:16px; border:1px solid var(--line);" onerror="this.onerror=null; this.src='${p.fallbackImage}';">
+                <div style="color:var(--lime); font-size:12px; font-weight:700; text-transform:uppercase;">${p.category} • ${p.badge}</div>
+                <h2 style="font-family:'Space Grotesk'; font-size: 24px; margin: 8px 0; color:#fff;">${p.title}</h2>
+                <div style="color:#ffd166; font-size:14px; margin-bottom: 16px;">★ ${p.rating}</div>
+                <p style="color:var(--muted); line-height: 1.6; margin-bottom: 20px;">${p.desc}</p>
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:16px;">
+                    <div>
+                        <div style="font-size:12px; color:var(--muted); text-decoration:line-through;">₹${p.origPrice.toLocaleString()}</div>
+                        <div style="font-family:'Space Grotesk'; font-size:24px; font-weight:700; color:var(--lime);">₹${p.price.toLocaleString()}</div>
+                    </div>
+                    <button class="btn-add" onclick="addToCart(${p.id}); closeModal();" style="padding:12px 24px;">+ Add to Cart</button>
+                </div>
+            `;
+            document.getElementById('quick-modal').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('quick-modal').classList.remove('open');
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert("Your cart is empty! Add products before checking out.");
+                return;
+            }
+            const total = document.getElementById('cart-total').textContent;
+            alert(`🎉 Order Placed Successfully!\n\nTotal Paid: ${total}\nThank you for shopping at TechGear.`);
+            cart = [];
+            updateCart();
+            toggleCart(false);
+        }
+
+        // Initialize
+        renderProducts(products);
+    </script>
+</body>
+</html>

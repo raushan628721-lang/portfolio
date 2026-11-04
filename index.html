@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raushan Kumar | Portfolio</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<header>
+    <a class="logo" href="#home"><span>RK</span> Portfolio</a>
+
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#skills">Skills</a>
+        <a href="#projects">Projects</a>
+        <a href="resume.html">Resume</a>
+        <a href="#contact">Contact</a>
+    </nav>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light mode" aria-pressed="false">
+        <span class="theme-icon">☼</span>
+        <span class="theme-text">Light</span>
+    </button>
+</header>
+
+<main>
+<section class="home" id="home">
+
+    <div class="content">
+        <p class="eyebrow"><span></span> Available for opportunities</p>
+        <h3>Hello, I'm</h3>
+        <h1>Raushan Kumar</h1>
+        <h2>Web Developer <span>building for the web.</span></h2>
+
+        <p>
+            I am a passionate Web Developer who loves creating modern,
+            responsive, and user-friendly websites using HTML, CSS,
+            JavaScript, and other web technologies.
+        </p>
+
+        <div class="hero-actions">
+            <a href="#contact" class="btn">Let's work together <span>↗</span></a>
+            <a href="#projects" class="text-link">View projects <span>↓</span></a>
+        </div>
+
+        <div class="hero-meta">
+            <div><strong>01</strong><span>Developer</span></div>
+            <div><strong>03+</strong><span>Years learning</span></div>
+            <div><strong>10+</strong><span>Projects built</span></div>
+        </div>
+
+    </div>
+
+    <div class="image">
+        <div class="profile-frame">
+            <img id="profile-image" src="profile.jpg" alt="Raushan Kumar" onerror="this.style.display='none'; document.querySelector('.profile-placeholder').style.display='grid';">
+            <div class="profile-placeholder">RK</div>
+        </div>
+        <label class="profile-upload" for="profile-upload">Choose profile photo</label>
+        <input id="profile-upload" class="profile-upload-input" type="file" accept="image/*">
+    </div>
+
+</section>
+
+<div class="marquee" aria-label="Areas of expertise">
+    <span>FRONTEND DEVELOPMENT</span><b>✦</b><span>UI IMPLEMENTATION</span><b>✦</b><span>RESPONSIVE DESIGN</span><b>✦</b><span>WEB TECHNOLOGY</span>
+</div>
+
+<section id="about">
+    <div class="section-header">
+        <div class="section-label">01 / About Me</div>
+        <h2>Curious Mind. <em>Practical Engineer.</em></h2>
+        <p class="section-sub">Transforming ideas into polished, high-performance web experiences with modern architecture, clean code, and intuitive user interfaces.</p>
+    </div>
+
+    <div class="about-card-center">
+        <p>
+            I'm <strong>Raushan Kumar</strong>, a Master of Computer Applications (MCA) PG student at <strong>Pondicherry University</strong> with a solid foundation in full-stack web engineering, algorithmic problem solving, and relational database systems. I specialize in designing responsive, accessible, and user-centric web applications that balance aesthetic precision with robust server-side architecture.
+        </p>
+        <div class="about-highlights">
+            <span class="about-pill">✦ Full-Stack Web Development</span>
+            <span class="about-pill">✦ Relational Databases &amp; SQL</span>
+            <span class="about-pill">✦ Modern UI/UX Architecture</span>
+            <span class="about-pill">✦ MCA PG Student @ Pondicherry University</span>
+        </div>
+    </div>
+</section>
+
+<section id="education" class="muted-section">
+    <div class="section-header">
+        <div class="section-label">02 / Academic Background</div>
+        <h2>Learning with <em>Intention &amp; Rigor.</em></h2>
+        <p class="section-sub">Comprehensive formal education in Computer Applications, software engineering principles, advanced databases, and modern web technologies.</p>
+    </div>
+
+    <div class="education">
+        <div class="education-card">
+            <span class="edu-badge">POSTGRADUATE DEGREE</span>
+            <h3>MCA - Master of Computer Applications</h3>
+            <div class="edu-meta">
+                <span>Pondicherry University (Central University)</span>
+                <span style="color:var(--lime); font-weight:700;">2025 – 2027</span>
+            </div>
+            <p>Puducherry, India • Department of Computer Science</p>
+            <p style="margin-top:8px;">Specialized in Internet &amp; Web Technologies (CSCA 514), Advanced Database Management Systems, Software Engineering, and Enterprise Distributed Computing.</p>
+            <div class="edu-chips">
+                <span class="edu-chip">Web Tech Lab</span>
+                <span class="edu-chip">Advanced DBMS</span>
+                <span class="edu-chip">System Design</span>
+                <span class="edu-chip">PHP &amp; MySQL</span>
+            </div>
+        </div>
+
+        <div class="education-card">
+            <span class="edu-badge">UNDERGRADUATE DEGREE</span>
+            <h3>BCA - Bachelor of Computer Applications</h3>
+            <div class="edu-meta">
+                <span>Magadh University</span>
+                <span style="color:var(--lime); font-weight:700;">2021 – 2024</span>
+            </div>
+            <p>Gaya, Bihar, India • Department of Computer Applications</p>
+            <p style="margin-top:8px;">Graduated with First Class Distinction. Built fundamental expertise in Data Structures, Object-Oriented Programming with Java, C Systems Programming, and Relational Databases.</p>
+            <div class="edu-chips">
+                <span class="edu-chip">Data Structures</span>
+                <span class="edu-chip">Java Programming</span>
+                <span class="edu-chip">C Programming</span>
+                <span class="edu-chip">Relational SQL</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="skills">
+    <div class="section-header">
+        <div class="section-label">03 / Technical Toolkit</div>
+        <h2>Technologies I Use to <em>Build &amp; Scale.</em></h2>
+        <p class="section-sub">A curated stack of programming languages, frontend standards, server-side tools, and relational database systems used in production-grade software.</p>
+    </div>
+
+    <div class="skills-container">
+        <div class="skills-category-card">
+            <div class="skill-group-title">Frontend Engineering &amp; UI Architecture</div>
+            <div class="skills-pills-row">
+                <div class="skill-badge">HTML5 Semantic</div>
+                <div class="skill-badge">CSS3 &amp; Modern Layouts</div>
+                <div class="skill-badge">JavaScript (ES6+)</div>
+                <div class="skill-badge">DOM Manipulation</div>
+                <div class="skill-badge">Responsive Design</div>
+                <div class="skill-badge">AJAX &amp; Fetch API</div>
+            </div>
+        </div>
+
+        <div class="skills-category-card">
+            <div class="skill-group-title">Backend Logic &amp; Programming Languages</div>
+            <div class="skills-pills-row">
+                <div class="skill-badge">C Programming</div>
+                <div class="skill-badge">Java (OOP &amp; Collections)</div>
+                <div class="skill-badge">PHP Server Scripting</div>
+                <div class="skill-badge">RESTful APIs</div>
+                <div class="skill-badge">JSON Data Serialization</div>
+            </div>
+        </div>
+
+        <div class="skills-category-card">
+            <div class="skill-group-title">Databases &amp; Developer Tooling</div>
+            <div class="skills-pills-row">
+                <div class="skill-badge">SQL (Structured Query Language)</div>
+                <div class="skill-badge">MySQL Database Engine</div>
+                <div class="skill-badge">phpMyAdmin Administration</div>
+                <div class="skill-badge">Git &amp; GitHub</div>
+                <div class="skill-badge">VS Code</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="expertise" class="muted-section">
+    <div class="section-header">
+        <div class="section-label">04 / Core Competencies</div>
+        <h2>From Architectural Concept to <em>Shipped Interface.</em></h2>
+        <p class="section-sub">End-to-end software development capabilities spanning responsive user experience design, relational database modeling, dynamic REST APIs, and reliable cloud deployments.</p>
+    </div>
+
+    <div class="expertise">
+        <div class="expertise-card">
+            <span class="expertise-icon">🎨</span>
+            <h3>Frontend Engineering</h3>
+            <p>Responsive layouts, cross-browser compatibility, modern CSS Grid/Flexbox, accessible semantic markup, and intuitive interactions.</p>
+        </div>
+
+        <div class="expertise-card">
+            <span class="expertise-icon">⚙️</span>
+            <h3>Backend Architecture</h3>
+            <p>Server-side logic execution, modular PHP, Java-backed OOP applications, session management, and role-based authentication flows.</p>
+        </div>
+
+        <div class="expertise-card">
+            <span class="expertise-icon">🗄️</span>
+            <h3>Database Engineering</h3>
+            <p>Relational SQL schema design, entity modeling, ACID transactions, CRUD operations, indexing, and phpMyAdmin management.</p>
+        </div>
+
+        <div class="expertise-card">
+            <span class="expertise-icon">⚡</span>
+            <h3>Asynchronous &amp; APIs</h3>
+            <p>Asynchronous data workflows using XMLHttpRequest and jQuery $.ajax, real-time JSON payload parsing, and dynamic DOM rendering.</p>
+        </div>
+
+        <div class="expertise-card">
+            <span class="expertise-icon">🔒</span>
+            <h3>Security &amp; Validation</h3>
+            <p>Form sanitization, prepared SQL statements to prevent injection, CSRF mitigation, and secure credential authentication.</p>
+        </div>
+
+        <div class="expertise-card">
+            <span class="expertise-icon">🛠️</span>
+            <h3>DevOps &amp; Versioning</h3>
+            <p>Version control with Git/GitHub, cloud deployment workflows, performance profiling, and comprehensive technical documentation.</p>
+        </div>
+    </div>
+</section>
+
+<section id="projects">
+    <div class="section-header">
+        <div class="section-label">05 / CSCA 514 Lab Projects</div>
+        <h2>Built with Purpose, <em>Shipped with Care.</em></h2>
+        <p class="section-sub">A curated portfolio of 10 complete web engineering projects covering the university curriculum, featuring live interactive browser apps and full backend PHP &amp; MySQL source code.</p>
+    </div>
+
+<div class="projects">
+
+<a class="project" href="projects/static-resume.html" target="_blank" rel="noopener noreferrer">
+<div class="project-img-thumb">
+    <img src="images/project-resume.svg" alt="Static Resume Webpage Preview">
+</div>
+<div class="project-header">
+    <span class="project-num">Ex 01</span>
+    <span class="project-launch">Open ↗</span>
+</div>
+<h3>Static Resume Webpage</h3>
+<p>Semantic HTML5 resume webpage featuring profile image, career milestones, education, and printable layout.</p>
+<span class="project-tag">HTML5 / SEMANTIC</span>
+</a>
+
+<a class="project" href="projects/shopping.html" target="_blank" rel="noopener noreferrer">
+<div class="project-img-thumb">
+    <img src="images/project-shopping.svg" alt="Online Shopping Store Preview">
+</div>
+<div class="project-header">
+    <span class="project-num">Ex 02</span>
+    <span class="project-launch">Open ↗</span>
+</div>
+<h3>Online Shopping Store</h3>
+<p>Modern e-commerce product catalog with category filters, quick view modal, dynamic cart calculations, and checkout.</p>
+<span class="project-tag">HTML5 / CSS3 / JS</span>
+</a>
+
+<a class="project" href="projects/quiz.html" target="_blank" rel="noopener noreferrer">
+<div class="project-img-thumb">
+    <img src="images/project-quiz.svg" alt="20-Question Quiz Preview">
+</div>
+<div class="project-header">
+    <span class="project-num">Ex 03</span>
+    <span class="project-launch">Open ↗</span>
+</div>
+<h3>Interactive 20-Question Quiz</h3>
+<p>Comprehensive Web Tech quiz with progress tracking, 15-minute countdown timer, palette navigation, and detailed score breakdown.</p>
+<span class="project-tag">JAVASCRIPT / INTERACTION</span>
+</a>
+
+<a class="project" href="projects/calculator.html" target="_blank" rel="noopener noreferrer">
+<div class="project-img-thumb">
+    <img src="images/project-calculator.svg" alt="Scientific Calculator Preview">
+</div>
+<div class="project-header">
+    <span class="project-num">Ex 04</span>
+    <span class="project-launch">Open ↗</span>
+</div>
+<h3>Scientific &amp; Basic Calculator</h3>
+<p>Feature-rich online calculator supporting basic arithmetic, trigonometric, logarithmic functions, and calculation history log.</p>
+<span class="project-tag">JS / SCIENTIFIC UI</span>
+</a>
+
+<a class="project" href="projects/employee.html" target="_blank" rel="noopener noreferrer">
+<div class="project-img-thumb">
+    <img src="images/project-employee.svg" alt="Employee Database Management Preview">
+</div>
+<div class="project-header">
+    <span class="project-num">Ex 05</span>
+    <span class="project-launch">Open ↗</span>
+</div>
+<h3>Employee Database Management</h3>
+<p>Form design to capture employee records into a phpMyAdmin MySQL table, featuring live data grid, CSV export, and PHP backend scripts.</p>
+<span class="project-tag">PHP &amp; MYSQL / DATABASE</span>
+</a>
+
+<a class="project" href="projects/department.html" target="_blank" rel="noopener noreferrer">
+<div class="project-img-thumb">
+    <img src="images/project-department.svg" alt="Department Web Portal Preview">
+</div>
+<div class="project-header">
+    <span class="project-num">Ex 06</span>
+    <span class="project-launch">Open ↗</span>
+</div>
+<h3>Department Web Portal</h3>
+<p>Dynamic MCA Department portal featuring Home page, About us with faculty directory, Student Registration form, and Login dashboard.</p>
+<span class="project-tag">DYNAMIC WEB APP / PHP</span>
+</a>
+
+<a class="project" href="projects/company.html" target="_blank" rel="noopener noreferrer">
+<div class="project-img-thumb">
+    <img src="images/project-company.svg" alt="Company RBAC Webpage Preview">
+</div>
+<div class="project-header">
+    <span class="project-num">Ex 07</span>
+    <span class="project-launch">Open ↗</span>
+</div>
+<h3>Company RBAC Webpage</h3>
+<p>Role-based authentication portal: Employee login grants access to Admin details; Admin login unlocks full Employee workforce records.</p>
+<span class="project-tag">AUTH &amp; RBAC / PHP &amp; MYSQL</span>
+</a>
+
+<a class="project" href="projects/contact-manager.html" target="_blank" rel="noopener noreferrer">
+<div class="project-img-thumb">
+    <img src="images/project-contact.svg" alt="Contact Management Preview">
+</div>
+<div class="project-header">
+    <span class="project-num">Ex 08</span>
+    <span class="project-launch">Open ↗</span>
+</div>
+<h3>Contact Management (CRUD)</h3>
+<p>Full CRUD contact book: add, view, edit modal, delete, categorized search, JSON export, and complete PHP database API code.</p>
+<span class="project-tag">FULL CRUD / PHP &amp; MYSQL</span>
+</a>
+
+<a class="project" href="projects/weather-ajax.html" target="_blank" rel="noopener noreferrer">
+<div class="project-img-thumb">
+    <img src="images/project-weather.svg" alt="Weather Dashboard Preview">
+</div>
+<div class="project-header">
+    <span class="project-num">Ex 09</span>
+    <span class="project-launch">Open ↗</span>
+</div>
+<h3>Weather Dashboard (Ajax &amp; JSON)</h3>
+<p>Asynchronous data fetching via XMLHttpRequest, parsing hypothetical weather JSON API responses, 5-day forecast, and raw payload inspector.</p>
+<span class="project-tag">AJAX / JSON / REST API</span>
+</a>
+
+<a class="project" href="projects/book-finder.html" target="_blank" rel="noopener noreferrer">
+<div class="project-img-thumb">
+    <img src="images/project-books.svg" alt="Book Explorer Preview">
+</div>
+<div class="project-header">
+    <span class="project-num">Ex 10</span>
+    <span class="project-launch">Open ↗</span>
+</div>
+<h3>Book Explorer (jQuery $.ajax)</h3>
+<p>Features 'Load Books' button triggering jQuery $.ajax GET request, JSON parsing, live genre filters, and raw payload code inspector.</p>
+<span class="project-tag">JQUERY / $.AJAX / JSON</span>
+</a>
+
+</div>
+
+</section>
+
+<section id="experience" class="experience-section">
+    <div class="section-header">
+        <div class="section-label">06 / Experience &amp; Delivery</div>
+        <h2>Professional Journey &amp; <em>Milestones.</em></h2>
+        <p class="section-sub">Delivering responsive, client-centered digital products with disciplined frontend code, seamless API integration, and collaborative delivery.</p>
+    </div>
+
+    <div class="experience-wrap">
+
+        <div class="experience-left">
+            <div class="exp-item">
+                <h3 class="role">Web Developer</h3>
+                <h4 class="company">Freelance / Client Projects • Delhi / Remote</h4>
+                <p class="exp-desc">Delivered responsive, interactive web interfaces and Python-backed features; owned frontend implementation, REST API integrations, performance optimization, and cross-browser testing for clients.</p>
+            </div>
+
+            <div class="timeline-list">
+                <h3>Engineering Timeline (Jan–Jul 2026)</h3>
+                <ul>
+                    <li><strong>Jan 2026:</strong> Project Architecture — user requirements, information architecture, wireframing.</li>
+                    <li><strong>Feb 2026:</strong> UI Foundation — responsive component layouts with modern HTML5 &amp; CSS3.</li>
+                    <li><strong>Mar 2026:</strong> Interactive Layer — client-side behavior, state handling, and UX with JavaScript.</li>
+                    <li><strong>Apr 2026:</strong> Backend Integration — connecting Python REST endpoints and database pipelines.</li>
+                    <li><strong>May 2026:</strong> Feature Polish — client form validation, edge cases, and accessibility audits.</li>
+                    <li><strong>Jun 2026:</strong> QA &amp; Optimization — performance benchmarks, mobile responsiveness, and testing.</li>
+                    <li><strong>Jul 2026:</strong> Production Release — deployment, client handover, documentation, and maintenance.</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <aside class="experience-right">
+            <div class="exp-card">
+                <div class="exp-logo">RK</div>
+                <div class="exp-card-body">
+                    <h4>Web Developer</h4>
+                    <p>Jan 2026 — Jul 2026</p>
+                    <p>6 months • Production Project</p>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+</section>
+</main>
+
+<section id="contact">
+
+    <div class="section-header">
+        <div class="section-label">07 / Connect &amp; Collaborate</div>
+        <h2>Have a Project or Opportunity <em>in Mind?</em></h2>
+        <p class="section-sub">I'm currently open for full-time software engineering roles, technical internships, and innovative web collaborations. Let's discuss how we can work together.</p>
+    </div>
+
+    <form enctype="multipart/form-data">
+        <input type="text" placeholder="Your Name" required>
+        <input type="email" placeholder="Your Email Address" required>
+        <label class="resume-label" for="resume">Attach relevant document / resume (optional)</label>
+        <input id="resume" type="file" accept="application/pdf,.doc,.docx" title="Upload resume (optional)">
+        <textarea placeholder="Tell me about your project, team, or opportunity..." required></textarea>
+        <button type="submit">Send Message <span>↗</span></button>
+    </form>
+
+</section>
+
+<footer>
+
+<p>Raushan Kumar | All Rights Reserved</p>
+
+<div class="footer-social">
+    <a href="https://github.com/raushan628721-lang" target="_blank" rel="noopener noreferrer">GitHub</a>
+    <a href="https://www.linkedin.com/in/raushan-kumar-3b133a384" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    <a href="resume.html" target="_blank">Resume</a>
+</div>
+
+</footer>
+
+<script>
+const profileUpload = document.querySelector('#profile-upload');
+const profileImage = document.querySelector('#profile-image');
+const profilePlaceholder = document.querySelector('.profile-placeholder');
+const themeToggle = document.querySelector('#theme-toggle');
+
+function setTheme(theme) {
+    const isLight = theme === 'light';
+    document.documentElement.dataset.theme = isLight ? 'light' : 'dark';
+    themeToggle.setAttribute('aria-pressed', String(isLight));
+    themeToggle.setAttribute('aria-label', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+    themeToggle.querySelector('.theme-icon').textContent = isLight ? '☾' : '☼';
+    themeToggle.querySelector('.theme-text').textContent = isLight ? 'Dark' : 'Light';
+    localStorage.setItem('portfolio-theme', isLight ? 'light' : 'dark');
+}
+
+setTheme(localStorage.getItem('portfolio-theme') || 'dark');
+themeToggle.addEventListener('click', () => {
+    setTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
+});
+
+// Load persisted photo if available in localStorage
+const savedPhoto = localStorage.getItem('portfolio-custom-photo');
+if (savedPhoto) {
+    profileImage.src = savedPhoto;
+    profileImage.style.display = 'block';
+    profilePlaceholder.style.display = 'none';
+}
+
+profileUpload.addEventListener('change', () => {
+    const selectedPhoto = profileUpload.files[0];
+    if (!selectedPhoto) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        profileImage.src = e.target.result;
+        profileImage.style.display = 'block';
+        profilePlaceholder.style.display = 'none';
+        try {
+            localStorage.setItem('portfolio-custom-photo', e.target.result);
+        } catch (err) {
+            console.warn('Could not save photo to localStorage:', err);
+        }
+    };
+    reader.readAsDataURL(selectedPhoto);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ex 5: Employee Registration & phpMyAdmin Database</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #111312;
+            --paper: #f2f0e9;
+            --muted: #aaa99f;
+            --line: rgba(242, 240, 233, 0.16);
+            --lime: #d5f36b;
+            --card-bg: #181b19;
+            --surface: #222623;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--ink);
+            color: var(--paper);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(17, 19, 18, 0.94);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
+            padding: 16px 6vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .back-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .back-link:hover { color: var(--lime); }
+        .page-badge {
+            background: rgba(213, 243, 107, 0.12);
+            color: var(--lime);
+            border: 1px solid var(--lime);
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        /* Hero */
+        .page-intro {
+            margin-bottom: 24px;
+        }
+        .page-intro h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(26px, 3.5vw, 36px);
+            margin-bottom: 6px;
+        }
+        .page-intro p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* Tab Switcher */
+        .view-switcher {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 12px;
+        }
+        .v-tab {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--line);
+            padding: 8px 18px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .v-tab.active {
+            background: var(--lime);
+            color: var(--ink);
+            border-color: var(--lime);
+        }
+
+        /* Two column layout for live app */
+        .app-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* Form Card */
+        .form-card {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 24px;
+        }
+        .form-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: var(--paper);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .form-card h3 span { color: var(--lime); }
+        .form-group {
+            margin-bottom: 14px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .form-control {
+            width: 100%;
+            background: #111312;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 10px 14px;
+            color: var(--paper);
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        .form-control:focus { outline: none; border-color: var(--lime); }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .btn-submit {
+            width: 100%;
+            background: var(--lime);
+            color: var(--ink);
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 8px;
+        }
+        .btn-submit:hover { background: #fff; }
+
+        /* Table Card */
+        .table-card {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 24px;
+            overflow-x: auto;
+        }
+        .table-head-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .table-head-bar h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+        }
+        .search-table {
+            background: #111312;
+            border: 1px solid var(--line);
+            color: var(--paper);
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 200px;
+        }
+        .btn-csv {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--lime);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-csv:hover { border-color: var(--lime); }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th {
+            text-align: left;
+            padding: 12px;
+            background: var(--surface);
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border-bottom: 1px solid var(--line);
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--line);
+            color: var(--paper);
+        }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+        .status-badge {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 99px;
+            font-weight: 600;
+        }
+        .status-active { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+        .status-prob { background: rgba(250, 204, 21, 0.15); color: #facc15; }
+        .btn-del {
+            background: transparent;
+            color: #f87171;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            padding: 2px 6px;
+        }
+
+        /* PHP & SQL Code Tab */
+        .code-container {
+            display: none;
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 30px;
+        }
+        .code-block {
+            background: #111312;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 18px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+        .code-title {
+            color: var(--lime);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        pre {
+            color: #d1d5db;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .btn-copy-code {
+            background: rgba(213,243,107,0.15);
+            color: var(--lime);
+            border: 1px solid var(--lime);
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-copy-code:hover { background: var(--lime); color: var(--ink); }
+
+        @media (max-width: 900px) {
+            .app-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="../index.html#projects" class="back-link">
+            ← Back to Portfolio
+        </a>
+        <div style="font-family:'Space Grotesk'; font-weight:700;">Employee DB Form</div>
+        <span class="page-badge">Exercise 05 • Database</span>
+    </header>
+
+    <main class="container">
+        <div class="page-intro">
+            <h1>Employee Registration &amp; phpMyAdmin Database</h1>
+            <p>CSCA 514 Lab: Form design for capturing employee records and persisting them into a relational MySQL database table.</p>
+        </div>
+
+        <div class="view-switcher">
+            <button class="v-tab active" id="tab-live" onclick="toggleView('live')">⚡ Live Interactive Form &amp; Table</button>
+            <button class="v-tab" id="tab-source" onclick="toggleView('source')">📄 View PHP &amp; phpMyAdmin SQL Code</button>
+        </div>
+
+        <!-- Live View -->
+        <div class="app-grid" id="live-view">
+            <!-- Registration Form -->
+            <section class="form-card">
+                <h3><span>+</span> Enter Employee Details</h3>
+                <form id="emp-form" onsubmit="handleEmployeeSubmit(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="emp-id">Employee ID</label>
+                            <input type="text" id="emp-id" class="form-control" required placeholder="EMP-104">
+                        </div>
+                        <div class="form-group">
+                            <label for="emp-status">Status</label>
+                            <select id="emp-status" class="form-control">
+                                <option value="Active">Active</option>
+                                <option value="Probation">Probation</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emp-name">Full Name</label>
+                        <input type="text" id="emp-name" class="form-control" required placeholder="e.g. Raushan Kumar">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emp-email">Email Address</label>
+                        <input type="email" id="emp-email" class="form-control" required placeholder="raushan@company.com">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="emp-dept">Department</label>
+                            <select id="emp-dept" class="form-control" required>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Information Tech">Information Tech</option>
+                                <option value="Human Resources">Human Resources</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Marketing">Marketing</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="emp-salary">Salary (₹/mo)</label>
+                            <input type="number" id="emp-salary" class="form-control" required placeholder="65000">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="emp-role">Designation</label>
+                            <input type="text" id="emp-role" class="form-control" required placeholder="Web Developer">
+                        </div>
+                        <div class="form-group">
+                            <label for="emp-date">Joining Date</label>
+                            <input type="date" id="emp-date" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">💾 Store Employee Record</button>
+                </form>
+            </section>
+
+            <!-- Live Table -->
+            <section class="table-card">
+                <div class="table-head-bar">
+                    <h3>Employee Table Records (<span id="rec-count">0</span>)</h3>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" class="search-table" id="search-emp" placeholder="Search name/ID..." oninput="renderTable()">
+                        <button class="btn-csv" onclick="exportCSV()">Export CSV</button>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Emp ID</th>
+                            <th>Name</th>
+                            <th>Dept</th>
+                            <th>Designation</th>
+                            <th>Salary</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="emp-tbody">
+                        <!-- Rows rendered via JS -->
+                    </tbody>
+                </table>
+            </section>
+        </div>
+
+        <!-- PHP & phpMyAdmin Source Code Tab -->
+        <div class="code-container" id="source-view">
+            <h2 style="font-family:'Space Grotesk'; font-size:24px; margin-bottom: 14px;">PHP Backend &amp; phpMyAdmin Database Implementation</h2>
+            <p style="color:var(--muted); font-size:14px; margin-bottom: 24px;">
+                Below are the official laboratory source codes for CSCA 514: MySQL database definition, database connection handle, and PHP insertion script.
+            </p>
+
+            <!-- SQL Schema -->
+            <div class="code-block">
+                <div class="code-title">
+                    <span>1. phpMyAdmin SQL Table Schema (`database: company_db`)</span>
+                    <button class="btn-copy-code" onclick="copyCode('sql-snippet')">Copy SQL</button>
+                </div>
+                <pre id="sql-snippet">CREATE DATABASE IF NOT EXISTS company_db;
+USE company_db;
+
+CREATE TABLE IF NOT EXISTS employees (
+    emp_id VARCHAR(20) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    department VARCHAR(50) NOT NULL,
+    designation VARCHAR(50) NOT NULL,
+    salary DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(20) DEFAULT 'Active',
+    joining_date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);</pre>
+            </div>
+
+            <!-- db_connect.php -->
+            <div class="code-block">
+                <div class="code-title">
+                    <span>2. Database Connection Script (`db_connect.php`)</span>
+                    <button class="btn-copy-code" onclick="copyCode('php-db-snippet')">Copy PHP</button>
+                </div>
+                <pre id="php-db-snippet">&lt;?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "company_db";
+
+// Create MySQLi connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Database Connection failed: " . $conn->connect_error);
+}
+?&gt;</pre>
+            </div>
+
+            <!-- insert_employee.php -->
+            <div class="code-block">
+                <div class="code-title">
+                    <span>3. Form Submission Handler (`insert_employee.php`)</span>
+                    <button class="btn-copy-code" onclick="copyCode('php-insert-snippet')">Copy PHP</button>
+                </div>
+                <pre id="php-insert-snippet">&lt;?php
+require_once 'db_connect.php';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $emp_id = htmlspecialchars(trim($_POST['emp_id']));
+    $name = htmlspecialchars(trim($_POST['name']));
+    $email = htmlspecialchars(trim($_POST['email']));
+    $department = htmlspecialchars(trim($_POST['department']));
+    $designation = htmlspecialchars(trim($_POST['designation']));
+    $salary = floatval($_POST['salary']);
+    $status = htmlspecialchars(trim($_POST['status']));
+    $joining_date = $_POST['joining_date'];
+
+    // Prepared statement to prevent SQL Injection
+    $stmt = $conn->prepare("INSERT INTO employees (emp_id, name, email, department, designation, salary, status, joining_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssdss", $emp_id, $name, $email, $department, $designation, $salary, $status, $joining_date);
+
+    if ($stmt->execute()) {
+        echo "&lt;script&gt;alert('Employee record successfully stored in database!'); window.location.href='employee.php';&lt;/script&gt;";
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+
+    $stmt->close();
+    $conn->close();
+}
+?&gt;</pre>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let employees = JSON.parse(localStorage.getItem('pu_employees') || 'null');
+        if (!employees) {
+            employees = [
+                { id: "EMP-101", name: "Raushan Kumar", dept: "Engineering", role: "Frontend Lead", salary: 75000, status: "Active", date: "2024-06-15" },
+                { id: "EMP-102", name: "Ananya Sharma", dept: "Information Tech", role: "Cloud Architect", salary: 88000, status: "Active", date: "2023-09-01" },
+                { id: "EMP-103", name: "Karthik Raja", dept: "Finance", role: "Financial Analyst", salary: 62000, status: "Probation", date: "2025-01-10" }
+            ];
+            localStorage.setItem('pu_employees', JSON.stringify(employees));
+        }
+
+        // Set default date
+        document.getElementById('emp-date').value = new Date().toISOString().split('T')[0];
+
+        function renderTable() {
+            const query = (document.getElementById('search-emp').value || '').toLowerCase();
+            const tbody = document.getElementById('emp-tbody');
+            const filtered = employees.filter(e => 
+                e.name.toLowerCase().includes(query) || 
+                e.id.toLowerCase().includes(query) || 
+                e.dept.toLowerCase().includes(query)
+            );
+
+            document.getElementById('rec-count').textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--muted); padding: 30px;">No employee records match the search.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(e => `
+                <tr>
+                    <td><strong style="color:var(--lime);">${e.id}</strong></td>
+                    <td><strong>${e.name}</strong></td>
+                    <td>${e.dept}</td>
+                    <td>${e.role}</td>
+                    <td>₹${Number(e.salary).toLocaleString()}</td>
+                    <td><span class="status-badge ${e.status === 'Active' ? 'status-active' : 'status-prob'}">${e.status}</span></td>
+                    <td>
+                        <button class="btn-del" title="Delete record" onclick="deleteEmployee('${e.id}')">✕</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function handleEmployeeSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('emp-id').value.trim();
+            const name = document.getElementById('emp-name').value.trim();
+            const email = document.getElementById('emp-email').value.trim();
+            const dept = document.getElementById('emp-dept').value;
+            const role = document.getElementById('emp-role').value.trim();
+            const salary = document.getElementById('emp-salary').value;
+            const status = document.getElementById('emp-status').value;
+            const date = document.getElementById('emp-date').value;
+
+            // Check if ID exists
+            if (employees.some(emp => emp.id.toLowerCase() === id.toLowerCase())) {
+                alert(`Employee ID ${id} already exists in database table!`);
+                return;
+            }
+
+            employees.unshift({ id, name, dept, role, salary, status, date });
+            localStorage.setItem('pu_employees', JSON.stringify(employees));
+            renderTable();
+            document.getElementById('emp-form').reset();
+            document.getElementById('emp-date').value = new Date().toISOString().split('T')[0];
+            alert(`✅ Employee "${name}" (${id}) stored successfully in database table!`);
+        }
+
+        function deleteEmployee(id) {
+            if (confirm(`Are you sure you want to delete employee record ${id}?`)) {
+                employees = employees.filter(e => e.id !== id);
+                localStorage.setItem('pu_employees', JSON.stringify(employees));
+                renderTable();
+            }
+        }
+
+        function exportCSV() {
+            let csv = "Employee ID,Full Name,Department,Designation,Salary,Status,Joining Date\n";
+            employees.forEach(e => {
+                csv += `"${e.id}","${e.name}","${e.dept}","${e.role}","${e.salary}","${e.status}","${e.date}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "employees_table_export.csv";
+            a.click();
+        }
+
+        function toggleView(view) {
+            const isLive = view === 'live';
+            document.getElementById('tab-live').classList.toggle('active', isLive);
+            document.getElementById('tab-source').classList.toggle('active', !isLive);
+            document.getElementById('live-view').style.display = isLive ? 'grid' : 'none';
+            document.getElementById('source-view').style.display = isLive ? 'none' : 'block';
+        }
+
+        function copyCode(id) {
+            const text = document.getElementById(id).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Code copied to clipboard!");
+            });
+        }
+
+        renderTable();
+    </script>
+</body>
+</html>

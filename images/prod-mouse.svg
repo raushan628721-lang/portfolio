@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" height="100%">
+  <defs>
+    <linearGradient id="mouse-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e2220"/>
+      <stop offset="100%" stop-color="#121513"/>
+    </linearGradient>
+    <linearGradient id="body-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2a322c"/>
+      <stop offset="100%" stop-color="#121613"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#mouse-bg)"/>
+  <ellipse cx="200" cy="150" rx="120" ry="70" fill="rgba(213,243,107,0.12)"/>
+
+  <!-- Mouse body -->
+  <path d="M 155 120 C 155 70, 245 70, 245 120 L 245 180 C 245 225, 155 225, 155 180 Z" fill="url(#body-grad)" stroke="#38433b" stroke-width="3"/>
+
+  <!-- Center divider & Scroll Wheel -->
+  <line x1="200" y1="80" x2="200" y2="135" stroke="#161a17" stroke-width="2"/>
+  <rect x="194" y="95" width="12" height="26" rx="6" fill="#0f1210" stroke="#d5f36b" stroke-width="2"/>
+
+  <!-- Ergonomic thumb rest fin -->
+  <path d="M 155 140 C 130 160, 130 195, 158 205 Z" fill="#202521" stroke="#38433b" stroke-width="2"/>
+
+  <!-- Glow strip -->
+  <path d="M 243 125 C 248 150, 248 180, 240 200" fill="none" stroke="#d5f36b" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Title -->
+  <text x="200" y="270" fill="#d5f36b" font-family="'Space Grotesk', sans-serif" font-size="13" font-weight="700" letter-spacing="2" text-anchor="middle">ERGONOMIC VERTICAL PRECISION MOUSE</text>
+</svg>

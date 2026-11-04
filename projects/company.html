@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ex 7: Company Portal • Employee & Admin RBAC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #111312;
+            --paper: #f2f0e9;
+            --muted: #aaa99f;
+            --line: rgba(242, 240, 233, 0.16);
+            --lime: #d5f36b;
+            --card-bg: #181b19;
+            --surface: #222623;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--ink);
+            color: var(--paper);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(17, 19, 18, 0.94);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
+            padding: 16px 6vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .back-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .back-link:hover { color: var(--lime); }
+        .company-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 19px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .company-logo span {
+            background: var(--lime);
+            color: var(--ink);
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--muted);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .nav-btn.active, .nav-btn:hover {
+            background: var(--lime);
+            color: var(--ink);
+            border-color: var(--lime);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        /* View Panels */
+        .view-panel {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .view-panel.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Home View */
+        .hero-banner {
+            background: radial-gradient(circle at 50% 0%, rgba(213,243,107,0.08) 0%, transparent 70%);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 50px 30px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .hero-banner .badge {
+            color: var(--lime);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .hero-banner h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(30px, 4.5vw, 46px);
+            margin-bottom: 14px;
+        }
+        .hero-banner p {
+            color: var(--muted);
+            font-size: 15px;
+            max-width: 650px;
+            margin: 0 auto 24px;
+            line-height: 1.6;
+        }
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+        }
+        .btn-action-hero {
+            background: var(--lime);
+            color: var(--ink);
+            border: none;
+            padding: 12px 24px;
+            font-weight: 700;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-action-hero:hover { background: #fff; }
+
+        .condition-alert {
+            background: rgba(213,243,107,0.06);
+            border-left: 4px solid var(--lime);
+            padding: 18px 24px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+        }
+        .condition-alert h4 {
+            color: var(--lime);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+        .condition-alert p {
+            color: var(--paper);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* Forms */
+        .form-card {
+            max-width: 520px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 36px;
+        }
+        .form-card h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 26px;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+        .form-card .sub {
+            color: var(--muted);
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        .form-control {
+            width: 100%;
+            background: #111312;
+            border: 1px solid var(--line);
+            padding: 12px 14px;
+            border-radius: 4px;
+            color: var(--paper);
+            font-family: inherit;
+            font-size: 14px;
+        }
+        .form-control:focus { outline: none; border-color: var(--lime); }
+        .btn-form-submit {
+            width: 100%;
+            background: var(--lime);
+            color: var(--ink);
+            border: none;
+            padding: 14px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+        .btn-form-submit:hover { background: #fff; }
+
+        /* Quick Demo Login */
+        .demo-box {
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px solid var(--line);
+            text-align: center;
+        }
+        .demo-box p { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+        .demo-buttons { display: flex; gap: 10px; justify-content: center; }
+        .btn-demo {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--line);
+            color: var(--paper);
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-demo:hover { border-color: var(--lime); color: var(--lime); }
+
+        /* Dashboard Views */
+        .dashboard-wrap {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 32px;
+        }
+        .dash-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 18px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .user-tag {
+            background: rgba(213,243,107,0.15);
+            color: var(--lime);
+            border: 1px solid var(--lime);
+            padding: 4px 10px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .btn-logout {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: #f87171;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Directory Cards & Table */
+        .directory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .dir-card {
+            background: #111312;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 20px;
+            transition: 0.2s;
+        }
+        .dir-card:hover { border-color: var(--lime); transform: translateY(-3px); }
+        .dir-card h4 { font-family: 'Space Grotesk'; font-size: 17px; margin-bottom: 4px; color: #fff; }
+        .dir-card .role { color: var(--lime); font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+        .dir-card p { color: var(--muted); font-size: 13px; margin-bottom: 4px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th {
+            text-align: left;
+            padding: 12px;
+            background: var(--surface);
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--line);
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--line);
+        }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
+        /* Code block */
+        .code-box {
+            background: #111312;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 18px;
+            margin-bottom: 24px;
+        }
+        pre {
+            color: #d1d5db;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        @media (max-width: 600px) {
+            header { flex-direction: column; align-items: flex-start; }
+            .nav-links { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <a href="../index.html#projects" class="back-link">
+                ← Back to Portfolio
+            </a>
+            <div class="company-logo">
+                <span>NEXUS</span> ENTERPRISE
+            </div>
+        </div>
+        <nav class="nav-links">
+            <button class="nav-btn active" onclick="switchView('home', this)">Home</button>
+            <button class="nav-btn" onclick="switchView('register', this)">Registration</button>
+            <button class="nav-btn" onclick="switchView('login', this)" id="nav-btn-login">Login</button>
+            <button class="nav-btn" onclick="switchView('code', this)">PHP / MySQL Backend</button>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- 1. HOME VIEW -->
+        <section class="view-panel active" id="view-home">
+            <div class="hero-banner">
+                <p class="badge">CSCA 514 • Exercise 07</p>
+                <h1>Corporate Employee &amp; Admin System</h1>
+                <p>Enterprise role-based portal with conditional access control and phpMyAdmin database authentication.</p>
+                <div class="hero-actions">
+                    <button class="btn-action-hero" onclick="switchView('login', document.getElementById('nav-btn-login'))">Portal Login ↗</button>
+                    <button class="btn-action-hero" style="background:transparent; border:1px solid var(--line); color:var(--paper);" onclick="switchView('register', document.querySelectorAll('.nav-btn')[1])">New Registration</button>
+                </div>
+            </div>
+
+            <div class="condition-alert">
+                <h4>🎯 Specific Lab Exercise Condition Implemented:</h4>
+                <p>
+                    <strong>Condition 1:</strong> If an <em>Employee</em> logs in, the portal authenticates the user and displays <strong>all Admin details</strong>.<br>
+                    <strong>Condition 2:</strong> If an <em>Admin</em> logs in, the portal authenticates the user and displays <strong>all Employee details</strong>.
+                </p>
+            </div>
+        </section>
+
+        <!-- 2. REGISTRATION VIEW -->
+        <section class="view-panel" id="view-register">
+            <div class="form-card">
+                <h2>User Registration</h2>
+                <p class="sub">Register as Employee or System Admin</p>
+                <form id="reg-form" onsubmit="handleRegistration(event)">
+                    <div class="form-group">
+                        <label for="reg-role">Select System Role</label>
+                        <select id="reg-role" class="form-control" required>
+                            <option value="Employee">Employee</option>
+                            <option value="Admin">Administrator</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-username">Username / ID</label>
+                        <input type="text" id="reg-username" class="form-control" required placeholder="e.g. raushan_emp">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-fullname">Full Name</label>
+                        <input type="text" id="reg-fullname" class="form-control" required placeholder="Raushan Kumar">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-email">Email Address</label>
+                        <input type="email" id="reg-email" class="form-control" required placeholder="raushan@nexuscorp.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-pass">Create Password</label>
+                        <input type="password" id="reg-pass" class="form-control" required placeholder="••••••••">
+                    </div>
+
+                    <button type="submit" class="btn-form-submit">Complete Registration</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 3. LOGIN VIEW -->
+        <section class="view-panel" id="view-login">
+            <div class="form-card" id="login-card">
+                <h2>Enterprise Login</h2>
+                <p class="sub">Sign in to authenticate your role</p>
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="login-username">Username</label>
+                        <input type="text" id="login-username" class="form-control" required placeholder="Username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-pass">Password</label>
+                        <input type="password" id="login-pass" class="form-control" required placeholder="••••••••">
+                    </div>
+
+                    <button type="submit" class="btn-form-submit">Authenticate Account</button>
+                </form>
+
+                <div class="demo-box">
+                    <p>⚡ Quick Demo Test Accounts (Click to test conditions):</p>
+                    <div class="demo-buttons">
+                        <button class="btn-demo" onclick="demoLogin('employee')">👤 Login as Employee</button>
+                        <button class="btn-demo" onclick="demoLogin('admin')">🔑 Login as Admin</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Authenticated Dashboard -->
+            <div id="auth-dashboard" style="display:none;" class="dashboard-wrap">
+                <div class="dash-top-bar">
+                    <div>
+                        <h2 style="font-family:'Space Grotesk'; font-size:24px;">Welcome, <span id="auth-user-name">User</span>!</h2>
+                        <div style="margin-top: 4px;">
+                            Role: <span class="user-tag" id="auth-user-role">Employee</span>
+                        </div>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">Logout</button>
+                </div>
+
+                <!-- Displayed when Employee logs in: All Admin details -->
+                <div id="admin-details-view" style="display:none;">
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="font-family:'Space Grotesk'; font-size:20px; color:var(--lime);">
+                            ✦ Executive Administration Directory (Admin Details)
+                        </h3>
+                        <p style="color:var(--muted); font-size:13px;">
+                            Logged in as Employee: Authenticated to view all corporate Admin &amp; Leadership details.
+                        </p>
+                    </div>
+                    <div class="directory-grid" id="admins-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Displayed when Admin logs in: All Employee details -->
+                <div id="employee-details-view" style="display:none;">
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="font-family:'Space Grotesk'; font-size:20px; color:var(--lime);">
+                            ✦ Workforce &amp; Staff Directory (All Employee Details)
+                        </h3>
+                        <p style="color:var(--muted); font-size:13px;">
+                            Logged in as Admin: Authenticated to inspect and manage all Employee records.
+                        </p>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Emp ID</th>
+                                    <th>Name</th>
+                                    <th>Department</th>
+                                    <th>Designation</th>
+                                    <th>Salary</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employees-tbody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. PHP / MYSQL BACKEND CODE -->
+        <section class="view-panel" id="view-code">
+            <h2 style="font-family:'Space Grotesk'; font-size:26px; margin-bottom: 8px;">PHP &amp; MySQL Conditional Authentication Scripts</h2>
+            <p style="color:var(--muted); font-size:14px; margin-bottom: 24px;">
+                Complete backend code demonstrating role-based redirect and SQL fetching logic for CSCA 514 lab records.
+            </p>
+
+            <div class="code-box">
+                <h4 style="color:var(--lime); margin-bottom:10px;">1. MySQL Database Schema (`company_rbac.sql`)</h4>
+                <pre>CREATE DATABASE IF NOT EXISTS company_rbac;
+USE company_rbac;
+
+-- Users table storing credentials and roles
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role ENUM('employee', 'admin') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Admin details table (viewed by authenticated employees)
+CREATE TABLE IF NOT EXISTS admin_details (
+    admin_id VARCHAR(20) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    designation VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    contact_no VARCHAR(20) NOT NULL,
+    office_room VARCHAR(50) NOT NULL
+);
+
+-- Employee details table (viewed by authenticated admins)
+CREATE TABLE IF NOT EXISTS employee_details (
+    emp_id VARCHAR(20) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    department VARCHAR(50) NOT NULL,
+    role VARCHAR(50) NOT NULL,
+    salary DECIMAL(10,2) NOT NULL,
+    status VARCHAR(20) NOT NULL
+);</pre>
+            </div>
+
+            <div class="code-box">
+                <h4 style="color:var(--lime); margin-bottom:10px;">2. PHP Authentication &amp; Conditional Query (`authenticate.php`)</h4>
+                <pre>&lt;?php
+session_start();
+require_once 'db.php';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = trim($_POST['username']);
+    $password = $_POST['password'];
+
+    $stmt = $conn->prepare("SELECT id, username, full_name, password_hash, role FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($user = $result->fetch_assoc()) {
+        if (password_verify($password, $user['password_hash'])) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['full_name'] = $user['full_name'];
+            $_SESSION['role'] = $user['role'];
+
+            // Conditional Routing based on lab criteria:
+            if ($user['role'] === 'employee') {
+                // If employee login, fetch and view all admin details
+                header("Location: view_admins.php");
+                exit;
+            } else if ($user['role'] === 'admin') {
+                // If admin login, fetch and view all employee details
+                header("Location: view_employees.php");
+                exit;
+            }
+        }
+    }
+    echo "&lt;script&gt;alert('Invalid credentials!'); window.location.href='login.php';&lt;/script&gt;";
+}
+?&gt;</pre>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Database simulation data
+        const adminDirectory = [
+            { id: "ADM-001", name: "Dr. Rajesh Gupta", role: "Chief Executive Officer (CEO)", email: "rajesh.ceo@nexuscorp.com", phone: "+91 98765 43210", room: "Executive Suite 401" },
+            { id: "ADM-002", name: "Meenakshi Sundaram", role: "Head of Operations & HR", email: "meenakshi.hr@nexuscorp.com", phone: "+91 98765 43211", room: "Admin Wing 204" },
+            { id: "ADM-003", name: "Vikram Malhotra", role: "Chief Technology Officer (CTO)", email: "vikram.cto@nexuscorp.com", phone: "+91 98765 43212", room: "Tech Tower 502" }
+        ];
+
+        const employeeDirectory = [
+            { id: "EMP-101", name: "Raushan Kumar", dept: "Frontend Engineering", role: "Lead UI Developer", salary: "₹85,000", status: "Active" },
+            { id: "EMP-102", name: "Pooja Hegde", dept: "Quality Assurance", role: "Automation QA Engineer", salary: "₹65,000", status: "Active" },
+            { id: "EMP-103", name: "Arjun Reddy", dept: "DevOps", role: "Cloud Systems Engineer", salary: "₹78,000", status: "Active" },
+            { id: "EMP-104", name: "Neha Verma", dept: "UI/UX Design", role: "Product Designer", salary: "₹60,000", status: "On Leave" }
+        ];
+
+        let companyUsers = JSON.parse(localStorage.getItem('company_users') || 'null');
+        if (!companyUsers) {
+            companyUsers = [
+                { username: "employee_demo", name: "Raushan Kumar (Employee)", role: "Employee", pass: "emp123" },
+                { username: "admin_demo", name: "Super Administrator", role: "Admin", pass: "admin123" }
+            ];
+            localStorage.setItem('company_users', JSON.stringify(companyUsers));
+        }
+
+        function switchView(viewName, btn) {
+            document.querySelectorAll('.view-panel').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+            const panel = document.getElementById(`view-${viewName}`);
+            if (panel) panel.classList.add('active');
+            if (btn) btn.classList.add('active');
+        }
+
+        function handleRegistration(e) {
+            e.preventDefault();
+            const role = document.getElementById('reg-role').value;
+            const username = document.getElementById('reg-username').value.trim();
+            const name = document.getElementById('reg-fullname').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const pass = document.getElementById('reg-pass').value;
+
+            if (companyUsers.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+                alert(`Username "${username}" is already taken!`);
+                return;
+            }
+
+            companyUsers.push({ username, name, role, pass, email });
+            localStorage.setItem('company_users', JSON.stringify(companyUsers));
+
+            alert(`✅ Registered successfully as ${role}!\nPlease login with username: ${username}`);
+            document.getElementById('reg-form').reset();
+            switchView('login', document.getElementById('nav-btn-login'));
+            document.getElementById('login-username').value = username;
+        }
+
+        function demoLogin(type) {
+            if (type === 'employee') {
+                document.getElementById('login-username').value = "employee_demo";
+                document.getElementById('login-pass').value = "emp123";
+            } else {
+                document.getElementById('login-username').value = "admin_demo";
+                document.getElementById('login-pass').value = "admin123";
+            }
+            document.getElementById('login-form').dispatchEvent(new Event('submit'));
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const uName = document.getElementById('login-username').value.trim();
+            const pass = document.getElementById('login-pass').value;
+
+            const user = companyUsers.find(u => u.username.toLowerCase() === uName.toLowerCase() && u.pass === pass);
+            if (!user) {
+                alert("❌ Invalid credentials! Try using the Demo Login buttons below.");
+                return;
+            }
+
+            // Render Dashboard with condition
+            document.getElementById('login-card').style.display = 'none';
+            document.getElementById('auth-dashboard').style.display = 'block';
+
+            document.getElementById('auth-user-name').textContent = user.name;
+            document.getElementById('auth-user-role').textContent = user.role.toUpperCase();
+
+            const adminView = document.getElementById('admin-details-view');
+            const empView = document.getElementById('employee-details-view');
+
+            if (user.role.toLowerCase() === 'employee') {
+                // CONDITION 1: If employee login -> view all admin details
+                adminView.style.display = 'block';
+                empView.style.display = 'none';
+
+                const listWrap = document.getElementById('admins-list');
+                listWrap.innerHTML = adminDirectory.map(a => `
+                    <div class="dir-card">
+                        <h4>${a.name}</h4>
+                        <div class="role">${a.role}</div>
+                        <p><strong>Admin ID:</strong> ${a.id}</p>
+                        <p><strong>Email:</strong> ${a.email}</p>
+                        <p><strong>Phone:</strong> ${a.phone}</p>
+                        <p><strong>Office:</strong> ${a.room}</p>
+                    </div>
+                `).join('');
+            } else {
+                // CONDITION 2: If admin login -> view all employee details
+                adminView.style.display = 'none';
+                empView.style.display = 'block';
+
+                const tbody = document.getElementById('employees-tbody');
+                tbody.innerHTML = employeeDirectory.map(e => `
+                    <tr>
+                        <td><strong style="color:var(--lime);">${e.id}</strong></td>
+                        <td><strong>${e.name}</strong></td>
+                        <td>${e.dept}</td>
+                        <td>${e.role}</td>
+                        <td>${e.salary}</td>
+                        <td><span style="color:var(--lime); font-weight:600;">${e.status}</span></td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function logout() {
+            document.getElementById('auth-dashboard').style.display = 'none';
+            document.getElementById('login-card').style.display = 'block';
+            document.getElementById('login-form').reset();
+        }
+    </script>
+</body>
+</html>

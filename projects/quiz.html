@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ex 3: Web Tech 20-Question Quiz Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #111312;
+            --paper: #f2f0e9;
+            --muted: #aaa99f;
+            --line: rgba(242, 240, 233, 0.16);
+            --lime: #d5f36b;
+            --card-bg: #191c1a;
+            --card-hover: #222623;
+            --correct: #4ade80;
+            --wrong: #f87171;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--ink);
+            color: var(--paper);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(17, 19, 18, 0.94);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
+            padding: 16px 6vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .back-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .back-link:hover { color: var(--lime); }
+        .quiz-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .timer-badge {
+            background: rgba(213, 243, 107, 0.12);
+            border: 1px solid var(--lime);
+            color: var(--lime);
+            padding: 6px 14px;
+            border-radius: 99px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Main Container */
+        .quiz-layout {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 24px;
+            flex-grow: 1;
+        }
+
+        /* Quiz Panel */
+        .quiz-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+        }
+        .progress-bar-wrap {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 99px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--lime);
+            width: 5%;
+            transition: width 0.3s ease;
+        }
+        .q-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .q-number {
+            color: var(--lime);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .q-category {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+        .question-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 22px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #ffffff;
+            margin-bottom: 24px;
+        }
+
+        /* Options */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        .option-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 16px 20px;
+            text-align: left;
+            color: var(--paper);
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: 0.2s;
+        }
+        .option-btn:hover {
+            background: var(--card-hover);
+            border-color: rgba(213, 243, 107, 0.4);
+        }
+        .option-btn.selected {
+            background: rgba(213, 243, 107, 0.12);
+            border-color: var(--lime);
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .option-letter {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1px solid var(--line);
+            display: grid;
+            place-items: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .option-btn.selected .option-letter {
+            background: var(--lime);
+            color: var(--ink);
+            border-color: var(--lime);
+        }
+
+        /* Quiz Navigation */
+        .q-nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            border-top: 1px solid var(--line);
+            padding-top: 20px;
+        }
+        .btn-qnav {
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid var(--line);
+            background: transparent;
+            color: var(--paper);
+        }
+        .btn-qnav:hover:not(:disabled) {
+            border-color: var(--lime);
+            color: var(--lime);
+        }
+        .btn-qnav:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .btn-primary-q {
+            background: var(--lime);
+            color: var(--ink);
+            border: none;
+        }
+        .btn-primary-q:hover {
+            background: #fff;
+            color: var(--ink);
+        }
+
+        /* Sidebar Question Palette */
+        .sidebar-palette {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+        .palette-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        .palette-num {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            border: 1px solid var(--line);
+            background: transparent;
+            color: var(--muted);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: 0.2s;
+        }
+        .palette-num:hover { border-color: var(--lime); color: #fff; }
+        .palette-num.current { border-color: var(--lime); outline: 2px solid var(--lime); }
+        .palette-num.answered { background: var(--lime); color: var(--ink); border-color: var(--lime); }
+
+        .btn-submit-all {
+            margin-top: auto;
+            background: var(--lime);
+            color: var(--ink);
+            padding: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.2s;
+        }
+        .btn-submit-all:hover { background: #fff; }
+
+        /* Score & Review Screen */
+        .results-container {
+            display: none;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+        .score-card {
+            background: var(--card-bg);
+            border: 1px solid var(--lime);
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(213,243,107,0.1);
+        }
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 6px solid var(--lime);
+            margin: 0 auto 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .score-circle strong { font-size: 42px; line-height: 1; color: var(--lime); }
+        .score-circle span { font-size: 13px; color: var(--muted); }
+        .score-card h2 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; margin-bottom: 8px; }
+        .score-summary-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 24px 0;
+            padding-top: 20px;
+            border-top: 1px solid var(--line);
+        }
+        .stat-item h4 { font-size: 26px; font-family: 'Space Grotesk'; }
+        .stat-item p { font-size: 12px; color: var(--muted); text-transform: uppercase; }
+
+        .review-section {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 32px;
+        }
+        .review-item {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--line);
+        }
+        .review-item:last-child { border-bottom: none; }
+        .review-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 3px;
+            margin-bottom: 8px;
+        }
+        .badge-correct { background: rgba(74, 222, 128, 0.15); color: var(--correct); border: 1px solid var(--correct); }
+        .badge-wrong { background: rgba(248, 113, 113, 0.15); color: var(--wrong); border: 1px solid var(--wrong); }
+
+        @media (max-width: 768px) {
+            .quiz-layout { grid-template-columns: 1fr; }
+            .sidebar-palette { order: -1; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="../index.html#projects" class="back-link">
+            ← Back to Portfolio
+        </a>
+        <div class="quiz-title">Ex 3: Web Tech 20-Question Quiz</div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button class="btn-qnav" onclick="initNewQuiz()" title="Generate a fresh random set of 20 questions" style="padding: 6px 14px; font-size: 13px; border-color: var(--lime); color: var(--lime);">
+                🎲 New Random Questions
+            </button>
+            <div class="timer-badge">
+                ⏱ <span id="quiz-timer">15:00</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Quiz Engine Interface -->
+    <main class="quiz-layout" id="quiz-view">
+        <section class="quiz-panel">
+            <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+            <div class="q-meta">
+                <span class="q-number" id="q-counter">Question 1 of 20</span>
+                <span class="q-category" id="q-cat">HTML5 & Web Standards</span>
+            </div>
+            <h2 class="question-text" id="q-title">Loading question...</h2>
+
+            <div class="options-list" id="options-container">
+                <!-- Injected via JS -->
+            </div>
+
+            <div class="q-nav-buttons">
+                <button class="btn-qnav" id="btn-prev" onclick="navigateQuestion(-1)">← Previous</button>
+                <button class="btn-qnav" onclick="clearAnswer()">Clear Choice</button>
+                <button class="btn-qnav btn-primary-q" id="btn-next" onclick="navigateQuestion(1)">Next →</button>
+            </div>
+        </section>
+
+        <aside class="sidebar-palette">
+            <h3 class="palette-title">Question Palette (20)</h3>
+            <div class="palette-grid" id="palette-grid">
+                <!-- 1-20 buttons -->
+            </div>
+            <button class="btn-submit-all" onclick="confirmSubmit()">Submit Quiz &amp; View Score</button>
+        </aside>
+    </main>
+
+    <!-- Score & Review Panel -->
+    <main class="results-container" id="results-view">
+        <div class="score-card">
+            <div class="score-circle">
+                <strong id="final-score">0</strong>
+                <span>out of 20</span>
+            </div>
+            <h2 id="score-headline">Quiz Completed!</h2>
+            <p id="score-feedback" style="color:var(--muted); max-width: 500px; margin: 0 auto;"></p>
+
+            <div class="score-summary-stats">
+                <div class="stat-item">
+                    <h4 style="color:var(--correct);" id="stat-correct">0</h4>
+                    <p>Correct</p>
+                </div>
+                <div class="stat-item">
+                    <h4 style="color:var(--wrong);" id="stat-wrong">0</h4>
+                    <p>Incorrect</p>
+                </div>
+                <div class="stat-item">
+                    <h4 style="color:var(--muted);" id="stat-unanswered">0</h4>
+                    <p>Unanswered</p>
+                </div>
+                <div class="stat-item">
+                    <h4 style="color:var(--lime);" id="stat-percent">0%</h4>
+                    <p>Score</p>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: center; gap: 12px; margin-top: 15px; flex-wrap: wrap;">
+                <button class="btn-qnav" style="padding: 10px 24px;" onclick="retakeSameQuiz()">↻ Retake Same Questions</button>
+                <button class="btn-qnav btn-primary-q" style="padding: 10px 24px;" onclick="initNewQuiz()">🎲 Try 20 New Questions</button>
+            </div>
+        </div>
+
+        <section class="review-section">
+            <h3 style="font-family:'Space Grotesk'; font-size: 22px; margin-bottom: 20px;">Detailed Answers Review</h3>
+            <div id="review-list">
+                <!-- Answer breakdown generated here -->
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Master Question Bank (60 Comprehensive Web Technology Questions)
+        const masterQuestionBank = [
+            {
+                q: "What does HTML stand for in modern web technology?",
+                cat: "HTML5",
+                options: [
+                    "Hyper Text Markup Language",
+                    "Hyperlinks and Text Markup Language",
+                    "Home Tool Markup Language",
+                    "Hyper Transfer Markup Language"
+                ],
+                correct: 0,
+                exp: "HTML stands for Hyper Text Markup Language, the standard markup language for creating web pages."
+            },
+            {
+                q: "Which semantic HTML5 tag represents independent, self-contained article content?",
+                cat: "HTML5",
+                options: ["<section>", "<article>", "<aside>", "<div>"],
+                correct: 1,
+                exp: "The <article> tag specifies independent, self-contained content that can be distributed independently."
+            },
+            {
+                q: "Which CSS property specifies the stacking order of positioned elements?",
+                cat: "CSS3",
+                options: ["z-index", "stack-order", "layer-depth", "position-index"],
+                correct: 0,
+                exp: "z-index specifies the vertical stacking order of elements that overlap."
+            },
+            {
+                q: "In CSS Flexbox, which property aligns items along the cross-axis?",
+                cat: "CSS3",
+                options: ["justify-content", "align-items", "flex-direction", "place-content"],
+                correct: 1,
+                exp: "align-items defines the default behavior for how flex items are laid out along the cross axis."
+            },
+            {
+                q: "Which JavaScript keyword declares a block-scoped variable that cannot be reassigned?",
+                cat: "JavaScript",
+                options: ["var", "let", "const", "static"],
+                correct: 2,
+                exp: "const declares block-scoped variables that cannot be reassigned after initialization."
+            },
+            {
+                q: "What does 'DOM' stand for in web browser architecture?",
+                cat: "Web API",
+                options: ["Data Object Model", "Document Object Model", "Document Operating Method", "Digital Object Mechanism"],
+                correct: 1,
+                exp: "DOM stands for Document Object Model, an application programming interface for HTML and XML documents."
+            },
+            {
+                q: "Which method is used in modern JavaScript to parse a JSON string into a native object?",
+                cat: "JavaScript",
+                options: ["JSON.stringify()", "JSON.toObject()", "JSON.parse()", "JSON.decode()"],
+                correct: 2,
+                exp: "JSON.parse() takes a JSON string and transforms it into a JavaScript object or primitive value."
+            },
+            {
+                q: "What HTTP status code represents '200 OK'?",
+                cat: "Networking",
+                options: ["Standard successful response", "Resource created", "Bad Request", "Internal Server Error"],
+                correct: 0,
+                exp: "HTTP status 200 OK indicates that the request has succeeded."
+            },
+            {
+                q: "Which HTTP request method is idempotent and used strictly for retrieving data?",
+                cat: "HTTP",
+                options: ["POST", "GET", "PATCH", "CONNECT"],
+                correct: 1,
+                exp: "The GET method requests a representation of the specified resource and should only retrieve data."
+            },
+            {
+                q: "What is the primary function of the JavaScript 'event.preventDefault()' method?",
+                cat: "JavaScript",
+                options: [
+                    "Stops the event from bubbling up the DOM",
+                    "Prevents the default browser action associated with the event",
+                    "Deletes the event listener",
+                    "Clears all form inputs"
+                ],
+                correct: 1,
+                exp: "event.preventDefault() tells the user agent that if the event does not get explicitly handled, its default action should not be taken."
+            },
+            {
+                q: "Which web storage mechanism stores data with NO expiration date across browser sessions?",
+                cat: "Web Storage",
+                options: ["sessionStorage", "localStorage", "Cookies", "Memory Cache"],
+                correct: 1,
+                exp: "localStorage allows websites to store key-value pairs in a browser with no expiration date."
+            },
+            {
+                q: "What does AJAX stand for in interactive web programming?",
+                cat: "Web Tech",
+                options: [
+                    "Asynchronous JavaScript and XML",
+                    "Advanced JavaScript and XHTML",
+                    "Automated Java and XML",
+                    "Application JSON and XML"
+                ],
+                correct: 0,
+                exp: "AJAX stands for Asynchronous JavaScript and XML."
+            },
+            {
+                q: "In CSS Grid, which unit represents a fractional share of the available free space?",
+                cat: "CSS3",
+                options: ["rem", "vw", "fr", "%"],
+                correct: 2,
+                exp: "The 'fr' unit represents a fraction of the available space in the grid container."
+            },
+            {
+                q: "Which JavaScript array method creates a new array populated with the results of calling a function on every element?",
+                cat: "JavaScript",
+                options: ["forEach()", "map()", "filter()", "reduce()"],
+                correct: 1,
+                exp: "Array.prototype.map() creates a new array populated with the results of calling a provided function on every element."
+            },
+            {
+                q: "What is the difference between '==' and '===' in JavaScript?",
+                cat: "JavaScript",
+                options: [
+                    "'==' performs type coercion, while '===' checks both value and type strictly",
+                    "'===' checks value only, while '==' checks type only",
+                    "There is no difference; they are interchangeable",
+                    "'===' is only for numbers and strings"
+                ],
+                correct: 0,
+                exp: "'==' performs loose equality with type coercion, whereas '===' performs strict equality without coercion."
+            },
+            {
+                q: "Which HTML attribute specifies an alternative text description for an image when it cannot be rendered?",
+                cat: "HTML5",
+                options: ["title", "alt", "src", "caption"],
+                correct: 1,
+                exp: "The 'alt' attribute provides an alternative text for an image if it cannot be displayed and is essential for accessibility."
+            },
+            {
+                q: "In relational databases and phpMyAdmin, what does SQL stand for?",
+                cat: "Database",
+                options: [
+                    "Structured Query Language",
+                    "Simple Question Language",
+                    "Standard Quota Logic",
+                    "Sequential Query Link"
+                ],
+                correct: 0,
+                exp: "SQL stands for Structured Query Language, the standard language for relational database management systems."
+            },
+            {
+                q: "Which HTTP header is utilized by web servers to enforce Cross-Origin Resource Sharing (CORS)?",
+                cat: "Web Security",
+                options: [
+                    "Access-Control-Allow-Origin",
+                    "Content-Security-Policy",
+                    "X-Frame-Options",
+                    "Authorization-Bearer"
+                ],
+                correct: 0,
+                exp: "The Access-Control-Allow-Origin response header indicates whether the response can be shared with requesting code from the given origin."
+            },
+            {
+                q: "Which JavaScript function executes a callback repeatedly at specified intervals of milliseconds?",
+                cat: "JavaScript",
+                options: ["setTimeout()", "setInterval()", "requestAnimationFrame()", "setCron()"],
+                correct: 1,
+                exp: "setInterval() repeatedly calls a function or executes a code snippet with a fixed time delay between each call."
+            },
+            {
+                q: "What is the role of phpMyAdmin in a LAMP/WAMP development stack?",
+                cat: "Full Stack",
+                options: [
+                    "A web-based graphical interface for managing MySQL databases",
+                    "A JavaScript compiler for PHP scripts",
+                    "A CSS preprocessor for styling",
+                    "A local DNS server daemon"
+                ],
+                correct: 0,
+                exp: "phpMyAdmin is a free and open-source administration tool written in PHP intended for handling MySQL databases over the web."
+            },
+            {
+                q: "Which HTML5 element is used to define navigation links for a website?",
+                cat: "HTML5",
+                options: ["<nav>", "<navigate>", "<menu>", "<header>"],
+                correct: 0,
+                exp: "The <nav> element designates major navigational blocks on a webpage."
+            },
+            {
+                q: "In CSS, which box-sizing value incorporates padding and border within the declared width and height?",
+                cat: "CSS3",
+                options: ["border-box", "content-box", "padding-box", "margin-box"],
+                correct: 0,
+                exp: "border-box tells the browser to account for any border and padding in the values you specify for an element's width and height."
+            },
+            {
+                q: "What is the evaluated output of 'typeof NaN' in JavaScript?",
+                cat: "JavaScript",
+                options: ["'number'", "'NaN'", "'undefined'", "'object'"],
+                correct: 0,
+                exp: "In JavaScript, NaN (Not a Number) is technically a numeric data type representing an unrepresentable number."
+            },
+            {
+                q: "Which HTTP status code indicates that the requested URL was not found on the server?",
+                cat: "HTTP",
+                options: ["404 Not Found", "401 Unauthorized", "403 Forbidden", "500 Server Error"],
+                correct: 0,
+                exp: "404 Not Found indicates that the origin server did not find a current representation for the target resource."
+            },
+            {
+                q: "Which HTML5 attribute ensures an input field must have a value before submitting?",
+                cat: "HTML5",
+                options: ["required", "validate", "mandatory", "not-null"],
+                correct: 0,
+                exp: "The 'required' boolean attribute specifies that an input field must be completed before submitting the form."
+            },
+            {
+                q: "What does CSS stand for in web styling?",
+                cat: "CSS3",
+                options: ["Cascading Style Sheets", "Computer Style Sheets", "Creative Style System", "Colorful Style Sheets"],
+                correct: 0,
+                exp: "CSS stands for Cascading Style Sheets, used to format the layout and appearance of web pages."
+            },
+            {
+                q: "Which JavaScript method safely attaches an event listener without replacing previous listeners?",
+                cat: "Web API",
+                options: ["addEventListener()", "attachEvent()", "onClick()", "bindHandler()"],
+                correct: 0,
+                exp: "addEventListener() sets up a function called whenever the specified event is delivered to the target."
+            },
+            {
+                q: "Which CSS pseudo-class targets an element when the user points to it with a cursor?",
+                cat: "CSS3",
+                options: [":hover", ":active", ":focus", ":visited"],
+                correct: 0,
+                exp: ":hover applies when the user designates an element with a pointing device, but does not necessarily activate it."
+            },
+            {
+                q: "In modern asynchronous JavaScript, what keyword pauses execution until a Promise settles?",
+                cat: "JavaScript",
+                options: ["await", "defer", "pause", "wait"],
+                correct: 0,
+                exp: "The await operator pauses the execution of an async function until a Promise is resolved or rejected."
+            },
+            {
+                q: "What is the primary purpose of the '<meta name=\"viewport\">' tag in HTML documents?",
+                cat: "HTML5",
+                options: [
+                    "Controls mobile layout viewport scaling and responsiveness",
+                    "Defines character encoding for typography",
+                    "Enhances local search engine indexing",
+                    "Restricts browser zooming permanently"
+                ],
+                correct: 0,
+                exp: "The viewport meta tag provides the browser with instructions on how to control the page's dimensions and scaling."
+            },
+            {
+                q: "Which CSS property creates animated transitions between property states over duration?",
+                cat: "CSS3",
+                options: ["transition", "transform", "keyframes", "motion"],
+                correct: 0,
+                exp: "transition allows you to change property values smoothly (from one value to another) over a given duration."
+            },
+            {
+                q: "In JavaScript, what does 'Array.prototype.filter()' return?",
+                cat: "JavaScript",
+                options: [
+                    "A new array containing elements that pass the predicate test",
+                    "The single first matching element",
+                    "A boolean whether any element matched",
+                    "The original array with filtered items removed"
+                ],
+                correct: 0,
+                exp: "filter() creates a shallow copy of a portion of a given array, filtered down to just the elements from the given array that pass the test."
+            },
+            {
+                q: "What does the HTTP 403 Forbidden status code signify?",
+                cat: "HTTP",
+                options: [
+                    "The server understood the request but refuses to authorize it",
+                    "Authentication credentials are fundamentally missing",
+                    "The target URL has been moved permanently",
+                    "The server crashed while executing scripts"
+                ],
+                correct: 0,
+                exp: "403 Forbidden indicates the server understands the request but refuses to authorize it, even if authenticated."
+            },
+            {
+                q: "Which HTML5 tag provides a resolution-dependent bitmap canvas for scriptable graphics?",
+                cat: "HTML5",
+                options: ["<canvas>", "<svg>", "<graphic>", "<bitmap>"],
+                correct: 0,
+                exp: "The <canvas> element is used to draw graphics on the fly via JavaScript."
+            },
+            {
+                q: "What does 'typeof null' evaluate to in JavaScript due to legacy implementation?",
+                cat: "JavaScript",
+                options: ["'object'", "'null'", "'undefined'", "'symbol'"],
+                correct: 0,
+                exp: "In the first implementation of JavaScript, values were stored in 32-bit units with type tags, causing 'typeof null' to return 'object'."
+            },
+            {
+                q: "Which CSS display mode enables a two-dimensional layout mechanism consisting of rows and columns?",
+                cat: "CSS3",
+                options: ["display: grid", "display: flex", "display: inline-block", "display: table"],
+                correct: 0,
+                exp: "CSS Grid is a 2D layout system designed for both rows and columns simultaneously."
+            },
+            {
+                q: "What is the meaning of CORS in modern web browser security?",
+                cat: "Web Security",
+                options: [
+                    "Cross-Origin Resource Sharing",
+                    "Central Object Relay Service",
+                    "Cross-Origin Routing System",
+                    "Client Origin Request Security"
+                ],
+                correct: 0,
+                exp: "CORS is an HTTP-header based mechanism allowing servers to indicate origins permitted to load resources."
+            },
+            {
+                q: "Which JavaScript operator returns the right-hand operand only when the left-hand operand is null or undefined?",
+                cat: "JavaScript",
+                options: ["?? (Nullish Coalescing)", "|| (Logical OR)", "&& (Logical AND)", "?: (Ternary)"],
+                correct: 0,
+                exp: "?? returns its right-hand side operand when its left-hand side operand is null or undefined, and otherwise returns its left-hand side."
+            },
+            {
+                q: "Which HTTP method is specifically intended for partial updates to an existing resource?",
+                cat: "HTTP",
+                options: ["PATCH", "PUT", "POST", "UPDATE"],
+                correct: 0,
+                exp: "The PATCH method applies partial modifications to a resource, unlike PUT which replaces the entire entity."
+            },
+            {
+                q: "In CSS, what is the 'rem' length unit relative to?",
+                cat: "CSS3",
+                options: [
+                    "The font-size of the root <html> element",
+                    "The font-size of the immediate parent element",
+                    "1% of the viewport width",
+                    "The screen's physical pixel density"
+                ],
+                correct: 0,
+                exp: "rem stands for 'root em' and is relative to the font-size of the root (<html>) element."
+            },
+            {
+                q: "Which HTML tag is used to embed or reference client-side JavaScript scripts?",
+                cat: "HTML5",
+                options: ["<script>", "<js>", "<javascript>", "<code>"],
+                correct: 0,
+                exp: "The <script> tag is used to embed client-side scripts or link to external scripts via the 'src' attribute."
+            },
+            {
+                q: "What does JSON stand for in web client-server communication?",
+                cat: "Web Tech",
+                options: [
+                    "JavaScript Object Notation",
+                    "Java Syntax Object Network",
+                    "JavaScript Output Node",
+                    "Junction System Object Name"
+                ],
+                correct: 0,
+                exp: "JSON stands for JavaScript Object Notation, a lightweight data-interchange format."
+            },
+            {
+                q: "Which web vulnerability occurs when an attacker injects untrusted scripts into a trusted web app?",
+                cat: "Web Security",
+                options: [
+                    "Cross-Site Scripting (XSS)",
+                    "SQL Injection (SQLi)",
+                    "Cross-Site Request Forgery (CSRF)",
+                    "Buffer Overflow"
+                ],
+                correct: 0,
+                exp: "XSS occurs when malicious scripts are injected into otherwise benign and trusted websites."
+            },
+            {
+                q: "Which JavaScript method serializes a JavaScript object or array into a JSON string?",
+                cat: "JavaScript",
+                options: ["JSON.stringify()", "JSON.parse()", "JSON.encode()", "Object.toJSON()"],
+                correct: 0,
+                exp: "JSON.stringify() converts a JavaScript value into a JSON-formatted string."
+            },
+            {
+                q: "Which CSS selector type holds the highest specificity weight in normal declarations?",
+                cat: "CSS3",
+                options: [
+                    "ID selector (#main)",
+                    "Class selector (.main)",
+                    "Element selector (div)",
+                    "Universal selector (*)"
+                ],
+                correct: 0,
+                exp: "ID selectors carry a specificity weighting of (1,0,0), overriding classes (0,1,0) and element selectors (0,0,1)."
+            },
+            {
+                q: "What command creates a local duplicate of an existing Git remote repository?",
+                cat: "Version Control",
+                options: ["git clone", "git pull", "git fork", "git checkout"],
+                correct: 0,
+                exp: "git clone targets an existing repository and creates a clone, or copy, of the target repository locally."
+            },
+            {
+                q: "Which HTTP status code signifies that a resource has permanently moved to a new URI?",
+                cat: "HTTP",
+                options: ["301 Moved Permanently", "302 Found (Temporary)", "307 Temporary Redirect", "410 Gone"],
+                correct: 0,
+                exp: "301 Moved Permanently tells search engines and browsers to update their links to the new URI."
+            },
+            {
+                q: "In modern JavaScript, which built-in data structure stores unique values of any type?",
+                cat: "JavaScript",
+                options: ["Set", "Map", "WeakSet", "Array"],
+                correct: 0,
+                exp: "The Set object lets you store unique values of any type, whether primitive values or object references."
+            },
+            {
+                q: "Which semantic tag pairs with '<figcaption>' to provide an image, diagram, or code illustration with a caption?",
+                cat: "HTML5",
+                options: ["<figure>", "<picture>", "<aside>", "<section>"],
+                correct: 0,
+                exp: "The <figure> tag specifies self-contained content, like illustrations, diagrams, and photos, and can contain a <figcaption>."
+            },
+            {
+                q: "What architectural paradigm does REST stand for in web services?",
+                cat: "Web API",
+                options: [
+                    "Representational State Transfer",
+                    "Remote Execution Service Transport",
+                    "Resource Endpoint Standard Type",
+                    "Relational System Transfer"
+                ],
+                correct: 0,
+                exp: "REST stands for Representational State Transfer, a software architectural style for distributed hypermedia systems."
+            },
+            {
+                q: "Which JavaScript keyword accesses and calls methods of an object's parent superclass?",
+                cat: "JavaScript",
+                options: ["super", "parent", "this", "base"],
+                correct: 0,
+                exp: "The super keyword is used to access properties on an object literal or class's [[Prototype]], or invoke a superclass constructor."
+            },
+            {
+                q: "Which CSS pseudo-element creates a cosmetic pseudo-element as the first child of the selected element?",
+                cat: "CSS3",
+                options: ["::before", "::after", ":first-child", "::marker"],
+                correct: 0,
+                exp: "::before creates a pseudo-element that is the first child of the selected element, typically styled with 'content'."
+            },
+            {
+                q: "What does an HTTP 500 status code communicate to the client browser?",
+                cat: "HTTP",
+                options: [
+                    "Internal Server Error (unexpected server-side exception)",
+                    "Bad Gateway upstream",
+                    "Gateway Timeout",
+                    "Client Syntax Malformed"
+                ],
+                correct: 0,
+                exp: "500 Internal Server Error indicates the server encountered an unexpected condition that prevented it from fulfilling the request."
+            },
+            {
+                q: "What core mechanism enables JavaScript's single-threaded runtime to handle asynchronous I/O?",
+                cat: "JavaScript",
+                options: ["Event Loop", "Multi-thread scheduler", "JIT Compiler", "Virtual DOM diffing"],
+                correct: 0,
+                exp: "The Event Loop monitors the Call Stack and Task Queues, pushing tasks onto the stack when it becomes empty."
+            },
+            {
+                q: "Which HTTP cookie flag prevents JavaScript from accessing document.cookie, helping stop cookie theft in XSS?",
+                cat: "Web Security",
+                options: ["HttpOnly", "Secure", "SameSite", "Domain"],
+                correct: 0,
+                exp: "HttpOnly cookies cannot be accessed through client-side scripts such as JavaScript, mitigating session hijacking via XSS."
+            },
+            {
+                q: "In CSS Grid, which function creates grid tracks that intelligently adapt to viewport dimensions?",
+                cat: "CSS3",
+                options: [
+                    "repeat(auto-fit, minmax(min, max))",
+                    "calc(100% / tracks)",
+                    "auto-stretch()",
+                    "fit-viewport()"
+                ],
+                correct: 0,
+                exp: "repeat(auto-fit, minmax(...)) dynamically adds columns or tracks that fit the container width automatically without media queries."
+            },
+            {
+                q: "Which JavaScript array method removes and returns the final element of an array in place?",
+                cat: "JavaScript",
+                options: ["pop()", "shift()", "slice()", "splice()"],
+                correct: 0,
+                exp: "The pop() method removes the last element from an array and returns that element, changing the array length."
+            },
+            {
+                q: "What does SVG stand for in vector web graphics?",
+                cat: "Web Tech",
+                options: [
+                    "Scalable Vector Graphics",
+                    "Simple Visual Guide",
+                    "Standard Vector Graph",
+                    "System Vector Gradient"
+                ],
+                correct: 0,
+                exp: "SVG stands for Scalable Vector Graphics, an XML-based format for vector graphics that scales without loss of quality."
+            },
+            {
+                q: "Which HTTP header indicates the media type (MIME type) of the resource sent by the server?",
+                cat: "HTTP",
+                options: ["Content-Type", "Accept-Charset", "User-Agent", "Cache-Control"],
+                correct: 0,
+                exp: "Content-Type specifies the original media type of the resource (e.g. text/html, application/json)."
+            },
+            {
+                q: "In relational databases, what key constraint uniquely identifies each record in a database table?",
+                cat: "Database",
+                options: ["Primary Key", "Foreign Key", "Index Key", "Candidate View"],
+                correct: 0,
+                exp: "A Primary Key uniquely identifies each record in a table and must contain unique values with no NULLs."
+            }
+        ];
+
+        const TOTAL_QUESTIONS = 20;
+        let activeQuestions = [];
+        let currentIdx = 0;
+        let userAnswers = new Array(TOTAL_QUESTIONS).fill(null);
+        let timeLeft = 900; // 15 mins (900 seconds)
+        let timerInterval = null;
+
+        // Escape HTML to safely display tags like <article>, <section>, etc. without breaking DOM
+        function escapeHTML(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Fisher-Yates array shuffle
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Pick 20 fresh questions from the question bank, and shuffle their option positions
+        function generateQuizSession(pool, count = TOTAL_QUESTIONS) {
+            const shuffledPool = shuffleArray(pool);
+            const chosen = shuffledPool.slice(0, Math.min(count, pool.length));
+
+            return chosen.map(item => {
+                // Map each option with a flag tracking whether it is correct
+                const optionsWithFlag = item.options.map((optText, index) => ({
+                    text: optText,
+                    isCorrect: (index === item.correct)
+                }));
+
+                // Randomize options order
+                const shuffledOptions = shuffleArray(optionsWithFlag);
+                const newCorrectIndex = shuffledOptions.findIndex(o => o.isCorrect);
+
+                return {
+                    q: item.q,
+                    cat: item.cat,
+                    options: shuffledOptions.map(o => o.text),
+                    correct: newCorrectIndex,
+                    exp: item.exp
+                };
+            });
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            const updateDisplay = () => {
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                document.getElementById('quiz-timer').textContent = 
+                    `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            };
+            updateDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("⏰ Time is up! Submitting your answers automatically.");
+                    showResults();
+                }
+            }, 1000);
+        }
+
+        function renderPalette() {
+            const grid = document.getElementById('palette-grid');
+            grid.innerHTML = activeQuestions.map((_, i) => {
+                let cls = 'palette-num';
+                if (i === currentIdx) cls += ' current';
+                if (userAnswers[i] !== null) cls += ' answered';
+                return `<button class="${cls}" onclick="jumpToQuestion(${i})">${i + 1}</button>`;
+            }).join('');
+        }
+
+        function loadQuestion(idx) {
+            currentIdx = idx;
+            const q = activeQuestions[idx];
+
+            document.getElementById('q-counter').textContent = `Question ${idx + 1} of ${TOTAL_QUESTIONS}`;
+            document.getElementById('q-cat').textContent = q.cat;
+            // Safe plain text for question title
+            document.getElementById('q-title').textContent = q.q;
+
+            const progress = ((idx + 1) / TOTAL_QUESTIONS) * 100;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+
+            const letters = ['A', 'B', 'C', 'D'];
+            const container = document.getElementById('options-container');
+            // Safely escape each option text so HTML tags like <section> or <article> render properly as text
+            container.innerHTML = q.options.map((opt, i) => {
+                const isSelected = userAnswers[idx] === i;
+                return `
+                    <button class="option-btn ${isSelected ? 'selected' : ''}" onclick="selectAnswer(${i})">
+                        <span class="option-letter">${letters[i]}</span>
+                        <span>${escapeHTML(opt)}</span>
+                    </button>
+                `;
+            }).join('');
+
+            document.getElementById('btn-prev').disabled = (idx === 0);
+            const nextBtn = document.getElementById('btn-next');
+            if (idx === TOTAL_QUESTIONS - 1) {
+                nextBtn.textContent = 'Finish & Review';
+            } else {
+                nextBtn.textContent = 'Next →';
+            }
+
+            renderPalette();
+        }
+
+        function selectAnswer(optIdx) {
+            userAnswers[currentIdx] = optIdx;
+            loadQuestion(currentIdx);
+        }
+
+        function clearAnswer() {
+            userAnswers[currentIdx] = null;
+            loadQuestion(currentIdx);
+        }
+
+        function navigateQuestion(delta) {
+            const target = currentIdx + delta;
+            if (target >= 0 && target < TOTAL_QUESTIONS) {
+                loadQuestion(target);
+            } else if (target === TOTAL_QUESTIONS) {
+                confirmSubmit();
+            }
+        }
+
+        function jumpToQuestion(idx) {
+            loadQuestion(idx);
+        }
+
+        function confirmSubmit() {
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            const unanswered = TOTAL_QUESTIONS - answeredCount;
+            let msg = `You have answered ${answeredCount} of ${TOTAL_QUESTIONS} questions.`;
+            if (unanswered > 0) {
+                msg += ` (${unanswered} unanswered).`;
+            }
+            msg += "\n\nDo you want to submit and view your final score?";
+            if (confirm(msg)) {
+                if (timerInterval) clearInterval(timerInterval);
+                showResults();
+            }
+        }
+
+        function showResults() {
+            let correct = 0;
+            let wrong = 0;
+            let unanswered = 0;
+
+            activeQuestions.forEach((q, i) => {
+                if (userAnswers[i] === null) {
+                    unanswered++;
+                } else if (userAnswers[i] === q.correct) {
+                    correct++;
+                } else {
+                    wrong++;
+                }
+            });
+
+            const percent = Math.round((correct / TOTAL_QUESTIONS) * 100);
+
+            document.getElementById('quiz-view').style.display = 'none';
+            document.getElementById('results-view').style.display = 'block';
+
+            document.getElementById('final-score').textContent = correct;
+            document.getElementById('stat-correct').textContent = correct;
+            document.getElementById('stat-wrong').textContent = wrong;
+            document.getElementById('stat-unanswered').textContent = unanswered;
+            document.getElementById('stat-percent').textContent = percent + '%';
+
+            let headline = "Great Effort!";
+            let feedback = `You scored ${correct} out of ${TOTAL_QUESTIONS} (${percent}%). Review your answer breakdown below.`;
+            if (percent >= 90) {
+                headline = "🌟 Outstanding Mastermind!";
+                feedback = `Superb achievement! You scored ${percent}%, showing comprehensive mastery of internet and web technologies.`;
+            } else if (percent >= 70) {
+                headline = "🎯 Excellent Performance!";
+                feedback = `Solid score of ${percent}%. You have strong fundamentals with minor areas to revise.`;
+            } else if (percent < 50) {
+                headline = "Keep Practicing!";
+                feedback = `You achieved ${percent}%. Check the explanations below to reinforce your web tech concepts.`;
+            }
+
+            document.getElementById('score-headline').textContent = headline;
+            document.getElementById('score-feedback').textContent = feedback;
+
+            // Render detailed review with escaped strings
+            const letters = ['A', 'B', 'C', 'D'];
+            const reviewWrap = document.getElementById('review-list');
+            reviewWrap.innerHTML = activeQuestions.map((q, i) => {
+                const userChoice = userAnswers[i];
+                const isCorrect = userChoice === q.correct;
+                const isSkipped = userChoice === null;
+
+                let badgeHtml = '';
+                if (isCorrect) {
+                    badgeHtml = `<span class="review-badge badge-correct">✓ Correct (+1 Mark)</span>`;
+                } else if (isSkipped) {
+                    badgeHtml = `<span class="review-badge" style="background:rgba(255,255,255,0.1); color:var(--muted); border:1px solid var(--line);">○ Skipped (0 Marks)</span>`;
+                } else {
+                    badgeHtml = `<span class="review-badge badge-wrong">✕ Incorrect</span>`;
+                }
+
+                return `
+                    <div class="review-item">
+                        ${badgeHtml}
+                        <h4 style="font-size:16px; margin: 6px 0 10px; color:#fff;">${i + 1}. ${escapeHTML(q.q)}</h4>
+                        <div style="font-size:14px; margin-bottom: 6px;">
+                            <strong>Your Answer:</strong> 
+                            <span style="color:${isCorrect ? 'var(--correct)' : (isSkipped ? 'var(--muted)' : 'var(--wrong)')};">
+                                ${isSkipped ? 'None Selected' : `${letters[userChoice]}. ${escapeHTML(q.options[userChoice])}`}
+                            </span>
+                        </div>
+                        <div style="font-size:14px; margin-bottom: 8px;">
+                            <strong>Correct Answer:</strong> 
+                            <span style="color:var(--correct); font-weight:600;">
+                                ${letters[q.correct]}. ${escapeHTML(q.options[q.correct])}
+                            </span>
+                        </div>
+                        <p style="font-size:13px; color:var(--muted); line-height:1.5; background:rgba(255,255,255,0.02); padding:10px; border-radius:4px;">
+                            💡 <strong>Explanation:</strong> ${escapeHTML(q.exp)}
+                        </p>
+                    </div>
+                `;
+            }).join('');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Retake same 20 questions
+        function retakeSameQuiz() {
+            if (timerInterval) clearInterval(timerInterval);
+            userAnswers = new Array(TOTAL_QUESTIONS).fill(null);
+            currentIdx = 0;
+            timeLeft = 900;
+            document.getElementById('results-view').style.display = 'none';
+            document.getElementById('quiz-view').style.display = 'grid';
+            startTimer();
+            loadQuestion(0);
+        }
+
+        // Initialize a brand new random set of 20 questions from the 60-question bank
+        function initNewQuiz() {
+            if (timerInterval) clearInterval(timerInterval);
+            activeQuestions = generateQuizSession(masterQuestionBank, TOTAL_QUESTIONS);
+            userAnswers = new Array(TOTAL_QUESTIONS).fill(null);
+            currentIdx = 0;
+            timeLeft = 900;
+            document.getElementById('results-view').style.display = 'none';
+            document.getElementById('quiz-view').style.display = 'grid';
+            startTimer();
+            loadQuestion(0);
+        }
+
+        // Automatically start with a fresh random 20 questions on load
+        initNewQuiz();
+    </script>
+</body>
+</html>

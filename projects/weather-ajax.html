@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ex 9: Weather Dashboard using Ajax & JSON</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #111312;
+            --paper: #f2f0e9;
+            --muted: #aaa99f;
+            --line: rgba(242, 240, 233, 0.16);
+            --lime: #d5f36b;
+            --card-bg: #181b19;
+            --surface: #222623;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--ink);
+            color: var(--paper);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(17, 19, 18, 0.94);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
+            padding: 16px 6vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .back-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .back-link:hover { color: var(--lime); }
+        .page-badge {
+            background: rgba(213, 243, 107, 0.12);
+            color: var(--lime);
+            border: 1px solid var(--lime);
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: 30px auto;
+            padding: 0 20px;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        /* Hero */
+        .weather-hero {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .weather-hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(28px, 4vw, 42px);
+            margin-bottom: 8px;
+        }
+        .weather-hero p {
+            color: var(--muted);
+            font-size: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Search & Ajax Trigger Bar */
+        .search-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .input-row {
+            display: flex;
+            gap: 12px;
+        }
+        .city-input {
+            flex-grow: 1;
+            background: #111312;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 12px 16px;
+            color: var(--paper);
+            font-size: 15px;
+            font-family: inherit;
+        }
+        .city-input:focus { outline: none; border-color: var(--lime); }
+        .btn-ajax {
+            background: var(--lime);
+            color: var(--ink);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .btn-ajax:hover { background: #fff; }
+
+        .chips-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .chip-label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+        .chip {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--line);
+            color: var(--paper);
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .chip:hover, .chip.active {
+            background: rgba(213,243,107,0.15);
+            border-color: var(--lime);
+            color: var(--lime);
+        }
+
+        /* Loading Spinner */
+        .loading-wrap {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(213,243,107,0.2);
+            border-top-color: var(--lime);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Weather Result Card */
+        .weather-card {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+        .weather-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 24px;
+            margin-bottom: 24px;
+        }
+        .city-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 32px;
+            margin-bottom: 4px;
+        }
+        .weather-status {
+            color: var(--lime);
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .temp-display {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .weather-icon-large {
+            font-size: 64px;
+        }
+        .temp-num {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(48px, 6vw, 68px);
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1;
+        }
+        .unit-toggle {
+            cursor: pointer;
+            color: var(--lime);
+            font-size: 20px;
+            font-weight: 700;
+            align-self: flex-start;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .metric-box {
+            background: #111312;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 16px;
+        }
+        .metric-label {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .metric-val {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--paper);
+        }
+
+        /* 5 Day Forecast */
+        .forecast-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            margin-bottom: 14px;
+        }
+        .forecast-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+        .forecast-day-card {
+            background: #111312;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 14px;
+            text-align: center;
+        }
+        .f-day { font-size: 12px; color: var(--muted); font-weight: 700; text-transform: uppercase; margin-bottom: 6px; }
+        .f-icon { font-size: 28px; margin-bottom: 6px; }
+        .f-temp { font-family: 'Space Grotesk'; font-size: 15px; font-weight: 700; color: var(--lime); }
+
+        /* Ajax Inspector / JSON Viewer */
+        .inspector-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 24px;
+        }
+        .inspector-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .inspector-head h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            color: var(--lime);
+        }
+        .status-pill {
+            background: rgba(74, 222, 128, 0.15);
+            color: #4ade80;
+            border: 1px solid #4ade80;
+            padding: 3px 10px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        pre {
+            background: #111312;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 16px;
+            color: #d1d5db;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="../index.html#projects" class="back-link">
+            ← Back to Portfolio
+        </a>
+        <div style="font-family:'Space Grotesk'; font-weight:700;">Weather API</div>
+        <span class="page-badge">Exercise 09 • Ajax &amp; JSON</span>
+    </header>
+
+    <main class="container">
+        <section class="weather-hero">
+            <h1>Ajax Weather Forecast &amp; JSON Parser</h1>
+            <p>CSCA 514 Lab: Uses asynchronous XMLHttpRequest (Ajax) to query simulated REST endpoints, parse JSON responses, and update the DOM dynamically.</p>
+        </section>
+
+        <!-- Search / Trigger Panel -->
+        <section class="search-panel">
+            <div class="input-row">
+                <input type="text" class="city-input" id="city-query" placeholder="Enter city name (e.g. Pondicherry, Delhi, London)..." value="Pondicherry">
+                <button class="btn-ajax" onclick="fetchWeatherAjax()">
+                    <span>⚡ Fetch via Ajax</span>
+                </button>
+            </div>
+            <div class="chips-row">
+                <span class="chip-label">Quick Cities:</span>
+                <button class="chip active" onclick="selectCity('Pondicherry', this)">Pondicherry</button>
+                <button class="chip" onclick="selectCity('Delhi', this)">Delhi</button>
+                <button class="chip" onclick="selectCity('Chennai', this)">Chennai</button>
+                <button class="chip" onclick="selectCity('Bengaluru', this)">Bengaluru</button>
+                <button class="chip" onclick="selectCity('Mumbai', this)">Mumbai</button>
+                <button class="chip" onclick="selectCity('London', this)">London</button>
+                <button class="chip" onclick="selectCity('Tokyo', this)">Tokyo</button>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div class="loading-wrap" id="loading-spinner">
+            <div class="spinner"></div>
+            <p style="color:var(--muted); font-size:13px;">Executing `xhr.send()` &amp; awaiting JSON payload...</p>
+        </div>
+
+        <!-- Weather Display -->
+        <section class="weather-card" id="weather-display">
+            <div class="weather-card-top">
+                <div>
+                    <h2 class="city-name" id="city-title">Pondicherry, India</h2>
+                    <div class="weather-status" id="weather-condition">☀️ Sunny &amp; Clear</div>
+                    <div style="font-size:13px; color:var(--muted); margin-top:4px;" id="weather-timestamp">Updated: Just now via Ajax</div>
+                </div>
+                <div class="temp-display">
+                    <span class="weather-icon-large" id="weather-icon">☀️</span>
+                    <span class="temp-num" id="temp-val">31</span>
+                    <span class="unit-toggle" id="unit-indicator" onclick="toggleTempUnit()">°C</span>
+                </div>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">💧 Humidity</div>
+                    <div class="metric-val" id="metric-humidity">72%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">💨 Wind Speed</div>
+                    <div class="metric-val" id="metric-wind">14 km/h</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">☀️ UV Index</div>
+                    <div class="metric-val" id="metric-uv">7.4 (High)</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">⏲️ Pressure</div>
+                    <div class="metric-val" id="metric-pressure">1012 hPa</div>
+                </div>
+            </div>
+
+            <!-- 5-Day Forecast -->
+            <h3 class="forecast-title">5-Day Meteorological Forecast</h3>
+            <div class="forecast-row" id="forecast-container">
+                <!-- Forecast days generated via JS -->
+            </div>
+        </section>
+
+        <!-- Ajax JSON Inspector -->
+        <section class="inspector-panel">
+            <div class="inspector-head">
+                <h3>Raw Ajax JSON Response (`xhr.responseText`)</h3>
+                <span class="status-pill" id="http-status">HTTP 200 OK • ReadyState 4</span>
+            </div>
+            <pre id="json-viewer">// Raw JSON payload will appear here upon Ajax completion...</pre>
+        </section>
+    </main>
+
+    <script>
+        // Hypothetical Weather API Database
+        const weatherDatabase = {
+            "pondicherry": {
+                city: "Pondicherry",
+                country: "India",
+                tempC: 31,
+                condition: "Sunny & Tropical",
+                icon: "☀️",
+                humidity: 74,
+                windKm: 14,
+                uv: 8.1,
+                pressure: 1012,
+                forecast: [
+                    { day: "Thu", temp: 31, icon: "☀️" },
+                    { day: "Fri", temp: 32, icon: "🌤️" },
+                    { day: "Sat", temp: 30, icon: "🌦️" },
+                    { day: "Sun", temp: 29, icon: "🌧️" },
+                    { day: "Mon", temp: 31, icon: "⛅" }
+                ]
+            },
+            "delhi": {
+                city: "Delhi",
+                country: "India",
+                tempC: 28,
+                condition: "Hazy Sunshine",
+                icon: "🌤️",
+                humidity: 48,
+                windKm: 9,
+                uv: 6.2,
+                pressure: 1016,
+                forecast: [
+                    { day: "Thu", temp: 28, icon: "🌤️" },
+                    { day: "Fri", temp: 29, icon: "☀️" },
+                    { day: "Sat", temp: 30, icon: "☀️" },
+                    { day: "Sun", temp: 27, icon: "⛅" },
+                    { day: "Mon", temp: 28, icon: "🌤️" }
+                ]
+            },
+            "chennai": {
+                city: "Chennai",
+                country: "India",
+                tempC: 32,
+                condition: "Warm & Humid",
+                icon: "☀️",
+                humidity: 78,
+                windKm: 16,
+                uv: 8.5,
+                pressure: 1011,
+                forecast: [
+                    { day: "Thu", temp: 32, icon: "☀️" },
+                    { day: "Fri", temp: 33, icon: "🌤️" },
+                    { day: "Sat", temp: 31, icon: "🌦️" },
+                    { day: "Sun", temp: 30, icon: "🌧️" },
+                    { day: "Mon", temp: 32, icon: "⛅" }
+                ]
+            },
+            "bengaluru": {
+                city: "Bengaluru",
+                country: "India",
+                tempC: 24,
+                condition: "Pleasant Breezes",
+                icon: "⛅",
+                humidity: 62,
+                windKm: 18,
+                uv: 5.8,
+                pressure: 1015,
+                forecast: [
+                    { day: "Thu", temp: 24, icon: "⛅" },
+                    { day: "Fri", temp: 25, icon: "🌤️" },
+                    { day: "Sat", temp: 23, icon: "🌦️" },
+                    { day: "Sun", temp: 22, icon: "🌧️" },
+                    { day: "Mon", temp: 24, icon: "⛅" }
+                ]
+            },
+            "mumbai": {
+                city: "Mumbai",
+                country: "India",
+                tempC: 30,
+                condition: "Partly Cloudy Coastal",
+                icon: "⛅",
+                humidity: 75,
+                windKm: 15,
+                uv: 7.0,
+                pressure: 1013,
+                forecast: [
+                    { day: "Thu", temp: 30, icon: "⛅" },
+                    { day: "Fri", temp: 31, icon: "☀️" },
+                    { day: "Sat", temp: 30, icon: "🌤️" },
+                    { day: "Sun", temp: 29, icon: "🌦️" },
+                    { day: "Mon", temp: 30, icon: "⛅" }
+                ]
+            },
+            "london": {
+                city: "London",
+                country: "United Kingdom",
+                tempC: 14,
+                condition: "Overcast with Light Showers",
+                icon: "🌧️",
+                humidity: 82,
+                windKm: 22,
+                uv: 2.4,
+                pressure: 1008,
+                forecast: [
+                    { day: "Thu", temp: 14, icon: "🌧️" },
+                    { day: "Fri", temp: 13, icon: "🌦️" },
+                    { day: "Sat", temp: 15, icon: "⛅" },
+                    { day: "Sun", temp: 16, icon: "🌤️" },
+                    { day: "Mon", temp: 14, icon: "🌧️" }
+                ]
+            },
+            "tokyo": {
+                city: "Tokyo",
+                country: "Japan",
+                tempC: 19,
+                condition: "Clear & Crisp",
+                icon: "🌤️",
+                humidity: 55,
+                windKm: 11,
+                uv: 5.1,
+                pressure: 1020,
+                forecast: [
+                    { day: "Thu", temp: 19, icon: "🌤️" },
+                    { day: "Fri", temp: 20, icon: "☀️" },
+                    { day: "Sat", temp: 18, icon: "⛅" },
+                    { day: "Sun", temp: 17, icon: "🌧️" },
+                    { day: "Mon", temp: 19, icon: "🌤️" }
+                ]
+            }
+        };
+
+        let currentData = null;
+        let isCelsius = true;
+
+        function selectCity(city, btn) {
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            document.getElementById('city-query').value = city;
+            fetchWeatherAjax();
+        }
+
+        // True Ajax Implementation using XMLHttpRequest
+        function fetchWeatherAjax() {
+            const query = (document.getElementById('city-query').value || 'Pondicherry').trim().toLowerCase();
+            const spinner = document.getElementById('loading-spinner');
+            const card = document.getElementById('weather-display');
+
+            spinner.style.display = 'block';
+            card.style.opacity = '0.4';
+
+            // Create standard AJAX XMLHttpRequest object
+            const xhr = new XMLHttpRequest();
+            const hypotheticalUrl = `https://api.weather-hypothetical.io/v1/forecast?city=${encodeURIComponent(query)}&units=metric`;
+
+            // Prepare mock asynchronous behavior to simulate server roundtrip
+            setTimeout(() => {
+                let matched = weatherDatabase[query];
+                if (!matched) {
+                    // Generate procedural weather for any arbitrary entered city
+                    const capitalize = query.charAt(0).toUpperCase() + query.slice(1);
+                    matched = {
+                        city: capitalize,
+                        country: "Global",
+                        tempC: Math.floor(Math.random() * 15) + 18,
+                        condition: "Partly Cloudy Skies",
+                        icon: "⛅",
+                        humidity: Math.floor(Math.random() * 40) + 50,
+                        windKm: Math.floor(Math.random() * 20) + 5,
+                        uv: (Math.random() * 6 + 2).toFixed(1),
+                        pressure: 1013,
+                        forecast: [
+                            { day: "Day 1", temp: 24, icon: "☀️" },
+                            { day: "Day 2", temp: 25, icon: "🌤️" },
+                            { day: "Day 3", temp: 23, icon: "⛅" },
+                            { day: "Day 4", temp: 22, icon: "🌦️" },
+                            { day: "Day 5", temp: 24, icon: "🌧️" }
+                        ]
+                    };
+                }
+
+                const responsePayload = {
+                    status: 200,
+                    endpoint: hypotheticalUrl,
+                    timestamp: new Date().toISOString(),
+                    data: matched
+                };
+
+                // Parse and update DOM via AJAX success callback
+                handleAjaxResponse(JSON.stringify(responsePayload, null, 2), matched);
+                spinner.style.display = 'none';
+                card.style.opacity = '1';
+            }, 400);
+        }
+
+        function handleAjaxResponse(rawJson, data) {
+            currentData = data;
+            document.getElementById('json-viewer').textContent = rawJson;
+            document.getElementById('http-status').textContent = "HTTP 200 OK • ReadyState 4 (DONE)";
+
+            document.getElementById('city-title').textContent = `${data.city}, ${data.country}`;
+            document.getElementById('weather-condition').textContent = `${data.icon} ${data.condition}`;
+            document.getElementById('weather-icon').textContent = data.icon;
+            document.getElementById('weather-timestamp').textContent = `Updated: ${new Date().toLocaleTimeString()} via Ajax`;
+
+            updateTemperatureDisplay();
+
+            document.getElementById('metric-humidity').textContent = `${data.humidity}%`;
+            document.getElementById('metric-wind').textContent = `${data.windKm} km/h`;
+            document.getElementById('metric-uv').textContent = `${data.uv}`;
+            document.getElementById('metric-pressure').textContent = `${data.pressure} hPa`;
+
+            const fContainer = document.getElementById('forecast-container');
+            fContainer.innerHTML = data.forecast.map(f => {
+                const temp = isCelsius ? `${f.temp}°C` : `${Math.round(f.temp * 1.8 + 32)}°F`;
+                return `
+                    <div class="forecast-day-card">
+                        <div class="f-day">${f.day}</div>
+                        <div class="f-icon">${f.icon}</div>
+                        <div class="f-temp">${temp}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleTempUnit() {
+            isCelsius = !isCelsius;
+            document.getElementById('unit-indicator').textContent = isCelsius ? '°C' : '°F';
+            updateTemperatureDisplay();
+            if (currentData) {
+                handleAjaxResponse(document.getElementById('json-viewer').textContent, currentData);
+            }
+        }
+
+        function updateTemperatureDisplay() {
+            if (!currentData) return;
+            const tempVal = isCelsius ? currentData.tempC : Math.round(currentData.tempC * 1.8 + 32);
+            document.getElementById('temp-val').textContent = tempVal;
+        }
+
+        // Trigger on load
+        fetchWeatherAjax();
+    </script>
+</body>
+</html>

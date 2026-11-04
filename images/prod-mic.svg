@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" height="100%">
+  <defs>
+    <linearGradient id="mic-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e2220"/>
+      <stop offset="100%" stop-color="#121513"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#mic-bg)"/>
+  <ellipse cx="200" cy="140" rx="120" ry="60" fill="rgba(213,243,107,0.12)"/>
+
+  <!-- Capsule Head Mesh -->
+  <rect x="170" y="55" width="60" height="70" rx="30" fill="#181c1a" stroke="#d5f36b" stroke-width="2.5"/>
+  <!-- Mesh Pattern Lines -->
+  <line x1="175" y1="75" x2="225" y2="75" stroke="#38433b" stroke-width="2"/>
+  <line x1="172" y1="90" x2="228" y2="90" stroke="#38433b" stroke-width="2"/>
+  <line x1="175" y1="105" x2="225" y2="105" stroke="#38433b" stroke-width="2"/>
+  <circle cx="200" cy="88" r="4" fill="#d5f36b"/>
+
+  <!-- Mic Lower Body -->
+  <rect x="175" y="125" width="50" height="50" rx="4" fill="#0f1210" stroke="#252b27" stroke-width="2"/>
+  <!-- Gain Knob -->
+  <circle cx="200" cy="150" r="8" fill="#202521" stroke="#d5f36b" stroke-width="1.5"/>
+
+  <!-- U-Shaped Shockmount Arm -->
+  <path d="M 150 120 C 150 190, 250 190, 250 120" fill="none" stroke="#333d36" stroke-width="6" stroke-linecap="round"/>
+  <!-- Joint Knobs -->
+  <circle cx="150" cy="120" r="6" fill="#d5f36b"/>
+  <circle cx="250" cy="120" r="6" fill="#d5f36b"/>
+
+  <!-- Desk Stand Base -->
+  <rect x="195" y="185" width="10" height="40" fill="#252b27"/>
+  <ellipse cx="200" cy="225" rx="55" ry="10" fill="#181c19" stroke="#333d36" stroke-width="2"/>
+
+  <!-- Title -->
+  <text x="200" y="270" fill="#d5f36b" font-family="'Space Grotesk', sans-serif" font-size="13" font-weight="700" letter-spacing="2" text-anchor="middle">STUDIO USB CONDENSER MICROPHONE</text>
+</svg>

@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ex 10: Book Explorer via jQuery $.ajax</title>
+    <!-- jQuery CDN as required -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #111312;
+            --paper: #f2f0e9;
+            --muted: #aaa99f;
+            --line: rgba(242, 240, 233, 0.16);
+            --lime: #d5f36b;
+            --card-bg: #181b19;
+            --surface: #222623;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--ink);
+            color: var(--paper);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(17, 19, 18, 0.94);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
+            padding: 16px 6vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+        .back-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .back-link:hover { color: var(--lime); }
+        .page-badge {
+            background: rgba(213, 243, 107, 0.12);
+            color: var(--lime);
+            border: 1px solid var(--lime);
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        /* Hero */
+        .book-hero {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .book-hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(28px, 4vw, 42px);
+            margin-bottom: 8px;
+        }
+        .book-hero p {
+            color: var(--muted);
+            font-size: 15px;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        /* Action & Endpoint Bar */
+        .api-controls-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .endpoint-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .endpoint-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+        .endpoint-input {
+            flex-grow: 1;
+            background: #111312;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 10px 14px;
+            color: var(--paper);
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .btn-load-books {
+            background: var(--lime);
+            color: var(--ink);
+            border: none;
+            padding: 12px 26px;
+            border-radius: 4px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-load-books:hover { background: #fff; transform: translateY(-2px); }
+
+        .filter-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-top: 1px solid var(--line);
+            padding-top: 14px;
+        }
+        .search-book-input {
+            background: #111312;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 8px 14px;
+            color: var(--paper);
+            font-size: 13px;
+            width: 240px;
+        }
+        .search-book-input:focus { outline: none; border-color: var(--lime); }
+        .genre-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .chip-btn {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--muted);
+            padding: 5px 12px;
+            border-radius: 99px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .chip-btn.active, .chip-btn:hover {
+            background: rgba(213,243,107,0.15);
+            border-color: var(--lime);
+            color: var(--lime);
+        }
+
+        /* Loading Spinner */
+        #ajax-loader {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(213,243,107,0.2);
+            border-top-color: var(--lime);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Books Grid */
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+            transition: all 0.3s ease;
+        }
+        .books-grid.large-cover-mode {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+
+        .book-card {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            transition: 0.25s ease;
+            position: relative;
+        }
+        .book-card:hover {
+            border-color: var(--lime);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.55);
+        }
+        .book-top {
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+        }
+
+        /* Authentic 3D Book Front Page Cover Component */
+        .front-page-cover {
+            position: relative;
+            border-radius: 4px 8px 8px 4px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: -4px 6px 14px rgba(0,0,0,0.6), inset 3px 0 6px rgba(255,255,255,0.12), inset -2px 0 4px rgba(0,0,0,0.45);
+            border-left: 5px solid rgba(0,0,0,0.5);
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+            cursor: pointer;
+            user-select: none;
+            flex-shrink: 0;
+        }
+        .front-page-cover:hover {
+            transform: perspective(600px) rotateY(-10deg) translateY(-4px);
+            box-shadow: -8px 12px 24px rgba(0,0,0,0.75), 0 0 20px rgba(213,243,107,0.3);
+        }
+        /* Page Edge effect */
+        .front-page-cover::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            right: 0;
+            bottom: 2px;
+            width: 3px;
+            background: repeating-linear-gradient(to bottom, #eae6da 0px, #eae6da 1px, #bbb4a3 1px, #bbb4a3 2px);
+            border-radius: 0 2px 2px 0;
+            box-shadow: -1px 0 2px rgba(0,0,0,0.3);
+        }
+        /* Spine reflection */
+        .front-page-cover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 10px;
+            background: linear-gradient(to right, rgba(0,0,0,0.65) 0%, rgba(255,255,255,0.18) 45%, rgba(0,0,0,0.35) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Card Thumbnail Size */
+        .cover-thumb {
+            width: 90px;
+            height: 130px;
+            padding: 8px 8px 8px 14px;
+        }
+        .cover-thumb .cover-publisher {
+            font-size: 6.5px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 800;
+            opacity: 0.9;
+        }
+        .cover-thumb .cover-art-center {
+            font-size: 30px;
+            text-align: center;
+            margin: auto 0;
+            line-height: 1;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5));
+        }
+        .cover-thumb .cover-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 9.5px;
+            font-weight: 700;
+            line-height: 1.15;
+            color: #ffffff;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.85);
+        }
+        .cover-thumb .cover-author {
+            font-size: 7.5px;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+            font-weight: 500;
+        }
+        .cover-thumb .cover-badge {
+            font-size: 6.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 1px 4px;
+            border-radius: 2px;
+            background: rgba(0,0,0,0.45);
+            align-self: flex-start;
+            margin-top: 3px;
+        }
+
+        /* Large Cover Card Mode */
+        .books-grid.large-cover-mode .book-top {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .books-grid.large-cover-mode .cover-thumb {
+            width: 140px;
+            height: 200px;
+            padding: 14px 14px 14px 20px;
+            margin-bottom: 12px;
+        }
+        .books-grid.large-cover-mode .cover-thumb .cover-publisher { font-size: 8px; }
+        .books-grid.large-cover-mode .cover-thumb .cover-art-center { font-size: 46px; }
+        .books-grid.large-cover-mode .cover-thumb .cover-title { font-size: 13px; -webkit-line-clamp: 4; }
+        .books-grid.large-cover-mode .cover-thumb .cover-author { font-size: 10px; }
+        .books-grid.large-cover-mode .cover-thumb .cover-badge { font-size: 8px; }
+
+        .book-header-info h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 17px;
+            color: #fff;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        .book-author {
+            color: var(--lime);
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .book-genre-badge {
+            display: inline-block;
+            margin-top: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 2px 7px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.06);
+            color: var(--muted);
+        }
+        .book-desc {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+        .book-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--line);
+            padding-top: 12px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .book-rating { color: #ffd166; font-weight: 700; }
+        
+        .btn-inspect-cover {
+            background: rgba(213,243,107,0.1);
+            border: 1px solid var(--lime);
+            color: var(--lime);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 6px;
+        }
+        .btn-inspect-cover:hover {
+            background: var(--lime);
+            color: var(--ink);
+            transform: translateY(-1px);
+        }
+
+        /* Front Page Modal & Reader */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 12, 11, 0.88);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .modal-backdrop.active {
+            display: flex;
+            animation: modalFadeIn 0.25s ease-out;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--lime);
+            border-radius: 12px;
+            max-width: 900px;
+            width: 100%;
+            padding: 36px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.85), 0 0 40px rgba(213,243,107,0.15);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--line);
+            color: var(--paper);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+            transition: 0.2s;
+        }
+        .modal-close-btn:hover {
+            background: #f87171;
+            color: #fff;
+            border-color: #f87171;
+        }
+        .modal-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 36px;
+            align-items: flex-start;
+        }
+        @media (max-width: 768px) {
+            .modal-layout { grid-template-columns: 1fr; }
+        }
+
+        /* Large 3D Front Page in Modal */
+        .large-front-cover {
+            width: 250px;
+            height: 360px;
+            padding: 20px 20px 20px 26px;
+            border-radius: 6px 14px 14px 6px;
+            box-shadow: -10px 18px 40px rgba(0,0,0,0.8), inset 4px 0 8px rgba(255,255,255,0.22);
+            border-left: 8px solid rgba(0,0,0,0.6);
+            margin: 0 auto;
+            position: relative;
+        }
+        .large-front-cover .cover-publisher {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+        .large-front-cover .cover-art-center {
+            font-size: 68px;
+            text-align: center;
+            margin: 18px 0;
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.6));
+        }
+        .large-front-cover .cover-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 19px;
+            font-weight: 700;
+            line-height: 1.25;
+            color: #fff;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+        }
+        .large-front-cover .cover-author {
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 6px;
+            opacity: 0.95;
+        }
+        .large-front-cover .cover-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.5);
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        /* Modal Tabs */
+        .m-tabs {
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 12px;
+            margin: 18px 0;
+            flex-wrap: wrap;
+        }
+        .m-tab-btn {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--muted);
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .m-tab-btn.active, .m-tab-btn:hover {
+            background: rgba(213,243,107,0.15);
+            border-color: var(--lime);
+            color: var(--lime);
+        }
+        .front-page-sheet {
+            background: #111312;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 24px;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #e5e7eb;
+            min-height: 240px;
+        }
+        .imprint-title-box {
+            text-align: center;
+            border-bottom: 1px dashed var(--line);
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+        .imprint-title-box h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 22px;
+            color: #fff;
+        }
+
+        /* Code & JSON Tabs */
+        .inspector-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 24px;
+        }
+        .inspector-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .i-tab {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--muted);
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .i-tab.active { background: var(--lime); color: var(--ink); border-color: var(--lime); }
+        pre {
+            background: #111312;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 16px;
+            color: #d1d5db;
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="../index.html#projects" class="back-link">
+            ← Back to Portfolio
+        </a>
+        <div style="font-family:'Space Grotesk'; font-weight:700;">Ex 10: Book Explorer via jQuery $.ajax</div>
+        <span class="page-badge">jQuery 3.7.1 • AJAX GET</span>
+    </header>
+
+    <main class="container">
+        <section class="book-hero">
+            <h1>Hypothetical Book API &amp; jQuery $.ajax</h1>
+            <p>CSCA 514 Lab 10: Clicking "Load Books" sends a jQuery Ajax GET request to a simulated book API endpoint (`https://api.example.com/books`), parses the JSON response, and renders book front covers, titles, authors, and metadata.</p>
+        </section>
+
+        <!-- API Control Bar -->
+        <section class="api-controls-panel">
+            <div class="endpoint-row">
+                <span class="endpoint-label">API Endpoint:</span>
+                <input type="text" class="endpoint-input" id="api-endpoint" value="https://api.example.com/books">
+                <button class="btn-load-books" id="btn-load-books">
+                    <span>📖 Load Books</span>
+                </button>
+            </div>
+
+            <div class="filter-row">
+                <div class="genre-chips" id="genre-filters">
+                    <button class="chip-btn active" data-genre="All">All Books</button>
+                    <button class="chip-btn" data-genre="Web Development">Web Development</button>
+                    <button class="chip-btn" data-genre="Algorithms">Algorithms</button>
+                    <button class="chip-btn" data-genre="Database">Database Systems</button>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <button class="chip-btn" id="btn-toggle-cover" onclick="toggleCoverMode()">🎴 Large Front Covers View</button>
+                    <input type="text" class="search-book-input" id="search-book" placeholder="Filter by title/author...">
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Spinner -->
+        <div id="ajax-loader">
+            <div class="spinner"></div>
+            <p style="color:var(--muted); font-size:13px;">Executing `$.ajax({ method: 'GET', url: 'https://api.example.com/books' })`...</p>
+        </div>
+
+        <!-- Books Grid -->
+        <section class="books-grid" id="books-container">
+            <!-- Rendered by jQuery -->
+        </section>
+
+        <!-- Code & JSON Inspector -->
+        <section class="inspector-panel">
+            <div class="inspector-tabs">
+                <button class="i-tab active" id="tab-code-btn" onclick="switchInspector('code')">📄 jQuery $.ajax Source Code</button>
+                <button class="i-tab" id="tab-json-btn" onclick="switchInspector('json')">⚡ Parsed JSON Response</button>
+            </div>
+
+            <div id="inspector-code">
+                <pre>// jQuery Ajax Implementation for Exercise 10
+$('#btn-load-books').on('click', function() {
+    var endpoint = $('#api-endpoint').val();
+    
+    // Asynchronous GET request using jQuery's $.ajax method
+    $.ajax({
+        url: endpoint,
+        type: 'GET',
+        dataType: 'json',
+        beforeSend: function() {
+            $('#ajax-loader').show();
+            $('#books-container').empty();
+        },
+        success: function(response) {
+            $('#ajax-loader').hide();
+            // Parse JSON response and display books (titles and authors)
+            renderBookCards(response.books);
+        },
+        error: function(xhr, status, error) {
+            $('#ajax-loader').hide();
+            console.error("Ajax Error: " + error);
+        }
+    });
+});</pre>
+            </div>
+
+            <div id="inspector-json" style="display:none;">
+                <pre id="json-output">// Click "Load Books" to inspect the raw JSON response payload...</pre>
+            </div>
+        </section>
+    </main>
+
+    <!-- Book Front Page Modal & Reader -->
+    <div class="modal-backdrop" id="front-page-modal" onclick="handleBackdropClick(event)">
+        <div class="modal-card">
+            <button class="modal-close-btn" onclick="closeFrontPageModal()" title="Close Front Page Modal">✕</button>
+            <div class="modal-layout">
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    <!-- 3D Large Front Cover -->
+                    <div id="modal-cover-wrapper"></div>
+                    <div style="display:flex; justify-content:center; gap:8px; margin-top:14px;">
+                        <button class="m-tab-btn" style="font-size:11px;" onclick="tiltFrontCover()">🔄 3D Spine Tilt</button>
+                    </div>
+                </div>
+                <div>
+                    <div id="modal-book-header"></div>
+                    
+                    <div class="m-tabs">
+                        <button class="m-tab-btn active" id="tab-btn-titlepage" onclick="switchFrontPageTab('titlepage')">📄 Inside Title Page</button>
+                        <button class="m-tab-btn" id="tab-btn-chapter1" onclick="switchFrontPageTab('chapter1')">📖 Chapter 1 Opening</button>
+                        <button class="m-tab-btn" id="tab-btn-toc" onclick="switchFrontPageTab('toc')">📑 Table of Contents</button>
+                    </div>
+
+                    <div id="modal-tab-content" class="front-page-sheet">
+                        <!-- Injected via JS -->
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:18px; border-top:1px solid var(--line); padding-top:14px;">
+                        <button class="btn-inspect-cover" onclick="navigateModalBook(-1)">← Previous Book</button>
+                        <span id="modal-book-counter" style="color:var(--muted); font-size:12px;"></span>
+                        <button class="btn-inspect-cover" onclick="navigateModalBook(1)">Next Book →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Master Book Catalog with Authentic Front Covers & Publication Metadata
+        var mockBooksDatabase = [
+            {
+                id: "B-101",
+                title: "JavaScript: The Definitive Guide",
+                edition: "7th Edition",
+                authors: ["David Flanagan"],
+                category: "Web Development",
+                publisher: "O'REILLY MEDIA",
+                icon: "🦏",
+                bgGradient: "linear-gradient(145deg, #2b1f0c 0%, #16110a 100%)",
+                borderColor: "#f5a623",
+                textColor: "#f5a623",
+                year: 2020,
+                rating: 4.9,
+                isbn: "978-1491952023",
+                subtitle: "Master the World's Most-Used Programming Language",
+                description: "The definitive guide to JavaScript and the modern web platform, covering ES2020 features, Node.js, and client-side web APIs.",
+                imprint: "O'Reilly Media, Inc., 1005 Gravenstein Highway North, Sebastopol, CA 95472.\nPrinted in the United States of America.\nEditor: Nicole Tache | Production Editor: Kristen Brown",
+                chapter1Excerpt: "JavaScript is the programming language of the Web. The overwhelming majority of modern websites use JavaScript, and all modern web browsers include JavaScript interpreters. JavaScript is a high-level, dynamic, interpreted programming language that is well-suited to object-oriented and functional programming styles.",
+                toc: [
+                    "Part I: JavaScript Language Core (Types, Values, Expressions, Operators)",
+                    "Part II: JavaScript in Web Browsers (DOM, Events, Asynchronous APIs, Fetch & AJAX)",
+                    "Part III: Node.js Server-Side JavaScript (Buffers, Filesystems, HTTP Streams)"
+                ]
+            },
+            {
+                id: "B-102",
+                title: "Introduction to Algorithms (CLRS)",
+                edition: "4th Edition",
+                authors: ["Thomas H. Cormen", "Charles E. Leiserson", "Ronald L. Rivest", "Clifford Stein"],
+                category: "Algorithms",
+                publisher: "THE MIT PRESS",
+                icon: "🌳",
+                bgGradient: "linear-gradient(145deg, #091f36 0%, #040d18 100%)",
+                borderColor: "#38bdf8",
+                textColor: "#38bdf8",
+                year: 2022,
+                rating: 4.8,
+                isbn: "978-0262046305",
+                subtitle: "The Standard International Textbook on Algorithm Design",
+                description: "The seminal textbook on algorithm design and analysis, spanning asymptotic notation, dynamic programming, graph algorithms, and data structures.",
+                imprint: "The MIT Press, Cambridge, Massachusetts | London, England.\nPublished in cooperation with McGraw-Hill Higher Education.\nCover Design: MIT Graphic Arts Laboratory",
+                chapter1Excerpt: "What are algorithms? Why is the study of algorithms worthwhile? What is the role of algorithms relative to other technologies used in computers? In this chapter, we answer these questions. Informally, an algorithm is any well-defined computational procedure that takes some value or set of values as input and produces some value or set of values as output.",
+                toc: [
+                    "I. Foundations (Role of Algorithms, Getting Started, Growth of Functions)",
+                    "II. Sorting and Order Statistics (Heapsort, Quicksort, Sorting in Linear Time)",
+                    "III. Data Structures (Red-Black Trees, Augmenting Data Structures, B-Trees)",
+                    "IV. Advanced Design and Analysis (Dynamic Programming, Greedy Algorithms)"
+                ]
+            },
+            {
+                id: "B-103",
+                title: "Database System Concepts",
+                edition: "7th Edition",
+                authors: ["Abraham Silberschatz", "Henry F. Korth", "S. Sudarshan"],
+                category: "Database",
+                publisher: "McGRAW-HILL",
+                icon: "⛵",
+                bgGradient: "linear-gradient(145deg, #3d0c14 0%, #170306 100%)",
+                borderColor: "#fb7185",
+                textColor: "#fb7185",
+                year: 2019,
+                rating: 4.7,
+                isbn: "978-0078022159",
+                subtitle: "The Iconic Sailboat Database Engineering Reference",
+                description: "Fundamental concepts of database management, SQL relational schemas, ACID transaction processing, and query optimization.",
+                imprint: "McGraw-Hill Education, 2 Penn Plaza, New York, NY 10121.\nCopyright © McGraw-Hill Global Education Holdings, LLC.\nCover Illustration: The Sailboat Motif — Navigating Relational Waters",
+                chapter1Excerpt: "A database-management system (DBMS) is a collection of interrelated data and a set of programs to access those data. The collection of data, usually referred to as the database, contains information relevant to an enterprise. The primary goal of a DBMS is to provide a way to store and retrieve database information that is both convenient and efficient.",
+                toc: [
+                    "Chapter 1: Introduction to Database Systems Architecture",
+                    "Chapter 2: Relational Model of Data and Normal Forms (1NF, 2NF, 3NF, BCNF)",
+                    "Chapter 3: Introduction to SQL (DDL, DML, Joins, Constraints, Indexing)",
+                    "Chapter 14: Transactions, ACID Properties, Concurrency Control, and Recovery"
+                ]
+            },
+            {
+                id: "B-104",
+                title: "Learning PHP, MySQL & JavaScript",
+                edition: "6th Edition",
+                authors: ["Robin Nixon"],
+                category: "Web Development",
+                publisher: "O'REILLY MEDIA",
+                icon: "🐦",
+                bgGradient: "linear-gradient(145deg, #062618 0%, #02120a 100%)",
+                borderColor: "#4ade80",
+                textColor: "#4ade80",
+                year: 2021,
+                rating: 4.8,
+                isbn: "978-1492093824",
+                subtitle: "With jQuery, CSS & HTML5 • Step-by-Step Full-Stack Guide",
+                description: "Master full-stack dynamic web development using PHP, phpMyAdmin/MySQL databases, and AJAX client-server interactions.",
+                imprint: "O'Reilly Media, Inc., Sebastopol, CA.\nProduction Services: Christopher Hearse | Indexer: Ellen Troutman-Zaig\nAnimal on Cover: The European Robin (Erithacus rubecula)",
+                chapter1Excerpt: "The Internet is no longer a collection of static web pages linked together by simple HTML. Today's web is vibrant, dynamic, and interactive, driven by database backends and asynchronous client-server communication using PHP, MySQL, and JavaScript.",
+                toc: [
+                    "Part 1: Introduction to Dynamic Web Content & PHP Syntax",
+                    "Part 2: MySQL and phpMyAdmin Relational Database Integration",
+                    "Part 3: Accessing MySQL via PHP PDO and Prepared Statements",
+                    "Part 4: Bringing it to Life with AJAX, jQuery, and Modern CSS3"
+                ]
+            },
+            {
+                id: "B-105",
+                title: "Designing Data-Intensive Applications",
+                edition: "1st Edition",
+                authors: ["Martin Kleppmann"],
+                category: "Database",
+                publisher: "O'REILLY MEDIA",
+                icon: "🐗",
+                bgGradient: "linear-gradient(145deg, #260a36 0%, #11021a 100%)",
+                borderColor: "#c084fc",
+                textColor: "#c084fc",
+                year: 2017,
+                rating: 5.0,
+                isbn: "978-1449373320",
+                subtitle: "The Big Ideas Behind Reliable, Scalable & Maintainable Systems",
+                description: "Deep dive into the architecture of reliable, scalable, and maintainable distributed data systems, replication, and caching.",
+                imprint: "O'Reilly Media, Inc., Sebastopol, CA.\nCover Designer: Randy Comer | Cover Image: The Wild Boar (Sus scrofa)\nInterior Typography: Minion Pro and Myriad Pro",
+                chapter1Excerpt: "Data-intensive applications are pushing the boundaries of what is possible by making use of increasingly large amounts of data, complex data models, and rapid rates of change. Reliability, scalability, and maintainability are the three fundamental pillars of data engineering.",
+                toc: [
+                    "Part I: Foundations of Data Systems (Reliability, Scalability, Storage Engines)",
+                    "Part II: Distributed Data (Replication, Partitioning, Transactions, Consensus)",
+                    "Part III: Derived Data (Batch Processing, MapReduce, Stream Processing)"
+                ]
+            },
+            {
+                id: "B-106",
+                title: "CSS Secrets: Solutions to Everyday Problems",
+                edition: "1st Edition",
+                authors: ["Lea Verou"],
+                category: "Web Development",
+                publisher: "O'REILLY MEDIA",
+                icon: "💎",
+                bgGradient: "linear-gradient(145deg, #360a1e 0%, #14020a 100%)",
+                borderColor: "#f43f5e",
+                textColor: "#f43f5e",
+                year: 2018,
+                rating: 4.9,
+                isbn: "978-1449372637",
+                subtitle: "Better Solutions to Everyday Web Problems • Foreword by Eric Meyer",
+                description: "Practical hacks and modern CSS techniques for responsive styling, transitions, typography, and advanced layout design.",
+                imprint: "O'Reilly Media, Inc., Sebastopol, CA.\nCover Designer: Ellie Volckhausen | Production Editor: Melanie Yarbrough\nTechnical Reviewers: Eric Meyer, Chris Coyier, Tab Atkins",
+                chapter1Excerpt: "CSS has come an astonishingly long way since the early days of basic font colors and table layouts. In this book, we explore 47 pragmatic secrets for crafting beautiful, responsive, and maintainable web interfaces using modern CSS3 standards.",
+                toc: [
+                    "Chapter 1: The CSS Coding Philosophy (DRY, Responsive, Fallbacks)",
+                    "Chapter 2: Backgrounds & Borders (Translucent Borders, Multiple Borders, Stripes)",
+                    "Chapter 3: Shapes & Geometry (Parallelograms, Diamond Images, Cutout Corners)",
+                    "Chapter 4: Visual Effects & Smooth Micro-Animations (One-Sided Shadows, Frosted Glass)"
+                ]
+            }
+        ];
+
+        var loadedBooks = [];
+        var activeGenre = "All";
+        var currentModalBookIdx = 0;
+        var isLargeCoverMode = false;
+
+        // Helper to generate the authentic 3D Book Front Cover component
+        function generateBookCoverHTML(b, isLarge = false) {
+            const cls = isLarge ? 'front-page-cover large-front-cover' : 'front-page-cover cover-thumb';
+            return `
+                <div class="${cls}" style="background: ${b.bgGradient}; border-color: ${b.borderColor};" onclick="openFrontPageModal('${b.id}')" title="Click to open Front Page Viewer">
+                    <div class="cover-publisher" style="color: ${b.textColor};">${b.publisher}</div>
+                    <div class="cover-art-center">${b.icon}</div>
+                    <div>
+                        <div class="cover-title">${b.title}</div>
+                        <div class="cover-author" style="color: ${b.textColor};">By ${b.authors[0]}</div>
+                        <div class="cover-badge" style="color: ${b.textColor};">${b.edition || b.category}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        $(document).ready(function() {
+            // Bind jQuery event listener on "Load Books" button as instructed
+            $('#btn-load-books').on('click', function() {
+                var endpoint = $('#api-endpoint').val();
+
+                // Show loading animation using jQuery
+                $('#ajax-loader').fadeIn(150);
+                $('#books-container').empty();
+
+                // Execute hypothetical $.ajax GET request
+                setTimeout(function() {
+                    var mockApiResponse = {
+                        status: 200,
+                        endpoint: endpoint,
+                        timestamp: new Date().toISOString(),
+                        total: mockBooksDatabase.length,
+                        books: mockBooksDatabase
+                    };
+
+                    $('#ajax-loader').hide();
+                    loadedBooks = mockApiResponse.books;
+
+                    // Display raw JSON in inspector
+                    $('#json-output').text(JSON.stringify(mockApiResponse, null, 2));
+
+                    // Render books
+                    renderBooks(loadedBooks);
+                }, 350);
+            });
+
+            // Genre filter chips using jQuery
+            $('.chip-btn[data-genre]').on('click', function() {
+                $('.chip-btn[data-genre]').removeClass('active');
+                $(this).addClass('active');
+                activeGenre = $(this).data('genre');
+                filterAndRender();
+            });
+
+            // Live search using jQuery .on('input')
+            $('#search-book').on('input', function() {
+                filterAndRender();
+            });
+
+            // Automatically trigger Load Books on page start
+            $('#btn-load-books').trigger('click');
+        });
+
+        function toggleCoverMode() {
+            isLargeCoverMode = !isLargeCoverMode;
+            if (isLargeCoverMode) {
+                $('#books-container').addClass('large-cover-mode');
+                $('#btn-toggle-cover').text('📋 Compact Cards View').addClass('active');
+            } else {
+                $('#books-container').removeClass('large-cover-mode');
+                $('#btn-toggle-cover').text('🎴 Large Front Covers View').removeClass('active');
+            }
+        }
+
+        function filterAndRender() {
+            var query = ($('#search-book').val() || '').toLowerCase();
+            var filtered = loadedBooks.filter(function(b) {
+                var matchGenre = activeGenre === 'All' || b.category === activeGenre;
+                var matchQuery = b.title.toLowerCase().indexOf(query) !== -1 || 
+                                 b.authors.join(', ').toLowerCase().indexOf(query) !== -1 ||
+                                 b.description.toLowerCase().indexOf(query) !== -1;
+                return matchGenre && matchQuery;
+            });
+            renderBooks(filtered);
+        }
+
+        function renderBooks(books) {
+            var $container = $('#books-container');
+            $container.empty();
+
+            if (books.length === 0) {
+                $container.html('<div style="grid-column: 1/-1; text-align:center; padding:50px; color:var(--muted);">No books match the selected criteria.</div>');
+                return;
+            }
+
+            $.each(books, function(i, b) {
+                var authorsList = b.authors.join(', ');
+                var coverHtml = generateBookCoverHTML(b, false);
+                var cardHtml = `
+                    <div class="book-card">
+                        <div class="book-top">
+                            ${coverHtml}
+                            <div class="book-header-info">
+                                <h3>${b.title}</h3>
+                                <div class="book-author">By: ${authorsList}</div>
+                                <span class="book-genre-badge">${b.category}</span>
+                                <div>
+                                    <button class="btn-inspect-cover" onclick="openFrontPageModal('${b.id}')">
+                                        📖 View Front Page
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="book-desc">${b.description}</p>
+                        <div class="book-footer">
+                            <span>ISBN: ${b.isbn}</span>
+                            <span class="book-rating">★ ${b.rating} (${b.year})</span>
+                        </div>
+                    </div>
+                `;
+                $container.append(cardHtml);
+            });
+        }
+
+        // Modal Logic
+        function openFrontPageModal(bookId) {
+            var idx = loadedBooks.findIndex(function(b) { return b.id === bookId; });
+            if (idx === -1) idx = 0;
+            currentModalBookIdx = idx;
+            renderModalBook(loadedBooks[currentModalBookIdx]);
+            $('#front-page-modal').addClass('active');
+            $('body').css('overflow', 'hidden');
+        }
+
+        function renderModalBook(b) {
+            if (!b) return;
+            $('#modal-cover-wrapper').html(generateBookCoverHTML(b, true));
+            $('#modal-book-header').html(`
+                <span class="book-genre-badge">${b.category} • ${b.edition}</span>
+                <h2 style="font-family:'Space Grotesk'; font-size: 24px; color:#fff; margin: 6px 0 4px;">${b.title}</h2>
+                <div style="color:var(--lime); font-size:14px; font-weight:600; margin-bottom: 6px;">By: ${b.authors.join(', ')}</div>
+                <p style="color:var(--muted); font-size:13px;">${b.subtitle || b.description}</p>
+            `);
+            $('#modal-book-counter').text(`Book ${currentModalBookIdx + 1} of ${loadedBooks.length}`);
+            switchFrontPageTab('titlepage');
+        }
+
+        function closeFrontPageModal() {
+            $('#front-page-modal').removeClass('active');
+            $('body').css('overflow', 'auto');
+        }
+
+        function handleBackdropClick(e) {
+            if ($(e.target).hasClass('modal-backdrop')) {
+                closeFrontPageModal();
+            }
+        }
+
+        function navigateModalBook(delta) {
+            if (loadedBooks.length === 0) return;
+            currentModalBookIdx = (currentModalBookIdx + delta + loadedBooks.length) % loadedBooks.length;
+            renderModalBook(loadedBooks[currentModalBookIdx]);
+        }
+
+        function switchFrontPageTab(tab) {
+            var b = loadedBooks[currentModalBookIdx];
+            if (!b) return;
+
+            $('.m-tab-btn').removeClass('active');
+            $('#tab-btn-' + tab).addClass('active');
+
+            var $content = $('#modal-tab-content');
+            if (tab === 'titlepage') {
+                $content.html(`
+                    <div class="imprint-title-box">
+                        <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:${b.textColor}; font-weight:700;">${b.publisher}</div>
+                        <h2 style="margin: 8px 0 4px;">${b.title}</h2>
+                        <div style="font-style:italic; font-size:14px; color:var(--muted);">${b.edition} • Published ${b.year}</div>
+                        <div style="margin-top:8px; font-weight:600; color:#fff;">Written by: ${b.authors.join(', ')}</div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px; font-size:13px; color:var(--muted); margin-bottom:16px;">
+                        <div><strong>ISBN-13:</strong> ${b.isbn}</div>
+                        <div><strong>Rating:</strong> ★ ${b.rating} / 5.0</div>
+                        <div><strong>Category:</strong> ${b.category}</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.03); border:1px solid var(--line); border-radius:6px; padding:16px; font-size:12px; font-family:monospace; line-height:1.6;">
+                        ${b.imprint.replace(/\\n/g, '<br>')}
+                    </div>
+                `);
+            } else if (tab === 'chapter1') {
+                $content.html(`
+                    <div style="border-bottom: 1px solid var(--line); padding-bottom:10px; margin-bottom:14px;">
+                        <span style="color:var(--lime); font-size:12px; font-weight:700; text-transform:uppercase;">Chapter 1 Opening Excerpt</span>
+                        <h3 style="font-family:'Space Grotesk'; font-size:18px; color:#fff; margin-top:4px;">First Page Reading Preview</h3>
+                    </div>
+                    <p style="font-size:14px; line-height:1.8; color:#f3f4f6; margin-bottom:16px;">
+                        ${b.chapter1Excerpt}
+                    </p>
+                    <p style="font-size:13px; color:var(--muted); line-height:1.6; background:rgba(213,243,107,0.08); border-left:3px solid var(--lime); padding:10px 14px; border-radius:0 4px 4px 0;">
+                        💡 <strong>Academic Reading Note:</strong> This textbook is recommended for university and master's level Computer Science and Web Engineering curricula.
+                    </p>
+                `);
+            } else if (tab === 'toc') {
+                var tocList = b.toc.map(function(item) {
+                    return `<li style="margin-bottom:8px; color:#e5e7eb;">${item}</li>`;
+                }).join('');
+                $content.html(`
+                    <div style="border-bottom: 1px solid var(--line); padding-bottom:10px; margin-bottom:14px;">
+                        <span style="color:var(--lime); font-size:12px; font-weight:700; text-transform:uppercase;">Syllabus &amp; Contents</span>
+                        <h3 style="font-family:'Space Grotesk'; font-size:18px; color:#fff; margin-top:4px;">Table of Contents</h3>
+                    </div>
+                    <ul style="padding-left:20px; font-size:13.5px; line-height:1.7;">
+                        ${tocList}
+                    </ul>
+                `);
+            }
+        }
+
+        function tiltFrontCover() {
+            var $c = $('#modal-cover-wrapper .front-page-cover');
+            $c.css('transform', 'perspective(600px) rotateY(-22deg) scale(1.05)');
+            setTimeout(function() {
+                $c.css('transform', 'none');
+            }, 800);
+        }
+
+        function switchInspector(tab) {
+            if (tab === 'code') {
+                $('#tab-code-btn').addClass('active');
+                $('#tab-json-btn').removeClass('active');
+                $('#inspector-code').show();
+                $('#inspector-json').hide();
+            } else {
+                $('#tab-code-btn').removeClass('active');
+                $('#tab-json-btn').addClass('active');
+                $('#inspector-code').hide();
+                $('#inspector-json').show();
+            }
+        }
+    </script>
+</body>
+</html>

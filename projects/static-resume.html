@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raushan Kumar | One Page Resume</title>
+    <meta name="description" content="One Page Resume of Raushan Kumar - Web Developer & Computer Science PG Student (MCA, Pondicherry University)">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --ink: #0f1110;
+            --paper: #f4f3ee;
+            --muted: #9fa09a;
+            --muted-dark: #63655f;
+            --line: rgba(244, 243, 238, 0.12);
+            --lime: #d5f36b;
+            --lime-hover: #bce04e;
+            --lime-soft: rgba(213, 243, 107, 0.12);
+            --card-bg: #161917;
+            --card-border: rgba(244, 243, 238, 0.08);
+            --sidebar-bg: #121513;
+            --accent-blue: #60a5fa;
+            --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        [data-theme="light"] {
+            --ink: #f8fafc;
+            --paper: #0f172a;
+            --muted: #475569;
+            --muted-dark: #64748b;
+            --line: rgba(15, 23, 42, 0.12);
+            --lime: #0284c7;
+            --lime-hover: #0369a1;
+            --lime-soft: rgba(2, 132, 199, 0.1);
+            --card-bg: #ffffff;
+            --card-border: rgba(15, 23, 42, 0.1);
+            --sidebar-bg: #f1f5f9;
+            --accent-blue: #0284c7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--ink);
+            color: var(--paper);
+            font-family: var(--font-body);
+            line-height: 1.45;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        /* Top Action Bar (hidden on print) */
+        .top-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(18, 21, 19, 0.88);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
+            padding: 12px 6vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        [data-theme="light"] .top-nav {
+            background: rgba(255, 255, 255, 0.88);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--lime);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+        .back-link:hover {
+            transform: translateX(-3px);
+        }
+
+        .badge-pill {
+            background: var(--lime-soft);
+            color: var(--lime);
+            border: 1px solid currentColor;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid var(--line);
+            background: var(--card-bg);
+            color: var(--paper);
+            padding: 7px 14px;
+            font-family: var(--font-body);
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .btn-nav:hover {
+            border-color: var(--lime);
+            color: var(--lime);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--lime);
+            color: #0f1110;
+            border-color: var(--lime);
+            font-weight: 700;
+        }
+        .btn-primary:hover {
+            background: var(--lime-hover);
+            color: #0f1110;
+            box-shadow: 0 4px 14px rgba(213, 243, 107, 0.25);
+        }
+
+        /* Resume Main Sheet */
+        .resume-page-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 16px 50px;
+        }
+
+        .resume-sheet {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.25s ease;
+        }
+
+        /* ---------------- Header Banner ---------------- */
+        .resume-header {
+            padding: 24px 30px 20px;
+            border-bottom: 1px solid var(--line);
+            background: linear-gradient(180deg, rgba(213, 243, 107, 0.04) 0%, transparent 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-main {
+            flex: 1;
+        }
+
+        .name-row {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 4px;
+        }
+
+        .name-row h1 {
+            font-family: var(--font-heading);
+            font-size: 30px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: var(--paper);
+            line-height: 1.15;
+        }
+
+        .title-tagline {
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--lime);
+            letter-spacing: 0.01em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .title-tagline::before {
+            content: "•";
+            opacity: 0.6;
+        }
+
+        .summary-subtext {
+            font-size: 12.5px;
+            color: var(--muted);
+            margin-top: 6px;
+            max-width: 620px;
+            line-height: 1.45;
+        }
+
+        /* Contact strip */
+        .contact-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 14px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--line);
+            font-size: 11.5px;
+        }
+
+        .contact-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+        .contact-item svg {
+            width: 12px;
+            height: 12px;
+            fill: currentColor;
+            color: var(--lime);
+            flex-shrink: 0;
+        }
+        .contact-item a {
+            color: var(--paper);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .contact-item a:hover {
+            color: var(--lime);
+            text-decoration: underline;
+        }
+
+        /* Profile avatar */
+        .header-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 2px solid var(--lime);
+            padding: 2px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #1f2420;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .avatar-initials {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 30px;
+            color: var(--lime);
+        }
+
+        /* ---------------- Two-Column Body ---------------- */
+        .resume-body {
+            display: grid;
+            grid-template-columns: 290px 1fr;
+            min-height: 720px;
+        }
+
+        .col-left {
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--line);
+            padding: 20px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .col-right {
+            padding: 20px 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        /* Section Headings */
+        .sec-head {
+            font-family: var(--font-heading);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--lime);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .sec-head svg {
+            width: 13px;
+            height: 13px;
+            fill: currentColor;
+        }
+
+        /* Left Column Blocks */
+        .cert-card {
+            background: rgba(213, 243, 107, 0.05);
+            border: 1px solid rgba(213, 243, 107, 0.18);
+            border-radius: 6px;
+            padding: 8px 10px;
+            margin-bottom: 8px;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+        .cert-card:hover {
+            border-color: var(--lime);
+            transform: translateY(-1px);
+        }
+        .cert-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--paper);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .cert-title .cert-icon {
+            font-size: 13px;
+        }
+        .cert-issuer {
+            font-size: 10.5px;
+            color: var(--muted);
+            margin-top: 2px;
+            padding-left: 20px;
+        }
+
+        .skill-group {
+            margin-bottom: 10px;
+        }
+        .skill-group-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--muted);
+            margin-bottom: 5px;
+        }
+        .tags-cluster {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .tag-pill {
+            font-size: 10.5px;
+            padding: 2.5px 7px;
+            border-radius: 4px;
+            background: rgba(244, 243, 238, 0.05);
+            border: 1px solid var(--line);
+            color: var(--paper);
+            font-weight: 500;
+        }
+        .tag-pill.highlight {
+            background: var(--lime-soft);
+            border-color: rgba(213, 243, 107, 0.25);
+            color: var(--lime);
+        }
+
+        .strength-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 11.5px;
+            color: var(--muted);
+        }
+        .strength-list li {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .strength-list li::before {
+            content: "✓";
+            color: var(--lime);
+            font-weight: 700;
+            font-size: 11px;
+        }
+
+        /* Right Column Blocks */
+        .timeline-item {
+            position: relative;
+            padding-left: 14px;
+            border-left: 2px solid var(--line);
+            margin-bottom: 12px;
+        }
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -5px;
+            top: 4px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--lime);
+        }
+
+        .item-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .item-role {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--paper);
+        }
+        .item-period {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--lime);
+            font-weight: 600;
+        }
+        .item-org {
+            font-size: 11.5px;
+            font-weight: 500;
+            color: var(--muted);
+            margin-bottom: 3px;
+        }
+        .item-bullets {
+            list-style: none;
+            margin-top: 3px;
+            font-size: 11.5px;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+        .item-bullets li {
+            position: relative;
+            padding-left: 11px;
+            margin-bottom: 2px;
+        }
+        .item-bullets li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--lime);
+        }
+        .tech-inline {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--lime);
+            background: var(--lime-soft);
+            padding: 1px 5px;
+            border-radius: 3px;
+            margin-left: 4px;
+        }
+
+        /* Footer Stamp */
+        .resume-footer {
+            padding: 10px 30px;
+            border-top: 1px solid var(--line);
+            background: var(--sidebar-bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10.5px;
+            color: var(--muted);
+        }
+        .resume-footer a {
+            color: var(--lime);
+            text-decoration: none;
+        }
+
+        /* ---------------- Print Optimization (Strict 1-Page A4) ---------------- */
+        @page {
+            size: A4 portrait;
+            margin: 8mm;
+        }
+
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #0f172a !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .top-nav {
+                display: none !important;
+            }
+
+            .resume-page-wrapper {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .resume-sheet {
+                max-width: 100% !important;
+                box-shadow: none !important;
+                border: none !important;
+                border-radius: 0 !important;
+                background: #ffffff !important;
+                page-break-inside: avoid !important;
+            }
+
+            .resume-header {
+                padding: 0 0 12px 0 !important;
+                background: none !important;
+                border-bottom: 2px solid #0f172a !important;
+            }
+
+            .name-row h1 {
+                color: #0f172a !important;
+                font-size: 26px !important;
+            }
+
+            .title-tagline {
+                color: #0284c7 !important;
+                font-size: 13px !important;
+            }
+
+            .summary-subtext, .contact-item, .item-org, .item-bullets, .strength-list {
+                color: #334155 !important;
+            }
+
+            .contact-item a {
+                color: #0f172a !important;
+            }
+
+            .contact-item svg {
+                color: #0284c7 !important;
+                fill: #0284c7 !important;
+            }
+
+            .header-avatar {
+                width: 75px !important;
+                height: 75px !important;
+                border-color: #0284c7 !important;
+            }
+
+            .resume-body {
+                grid-template-columns: 260px 1fr !important;
+                min-height: auto !important;
+            }
+
+            .col-left {
+                background: #f8fafc !important;
+                border-right: 1px solid #cbd5e1 !important;
+                padding: 12px 14px !important;
+                gap: 12px !important;
+            }
+
+            .col-right {
+                padding: 12px 16px !important;
+                gap: 12px !important;
+            }
+
+            .sec-head {
+                color: #0284c7 !important;
+                border-bottom: 1.5px solid #0284c7 !important;
+                margin-bottom: 6px !important;
+                font-size: 11px !important;
+            }
+
+            .cert-card {
+                background: #f0f9ff !important;
+                border: 1px solid #bae6fd !important;
+                padding: 6px 8px !important;
+                margin-bottom: 5px !important;
+            }
+            .cert-title {
+                color: #0f172a !important;
+                font-size: 11px !important;
+            }
+            .cert-issuer {
+                color: #475569 !important;
+            }
+
+            .tag-pill {
+                background: #ffffff !important;
+                border: 1px solid #cbd5e1 !important;
+                color: #1e293b !important;
+                font-size: 9.5px !important;
+                padding: 1px 5px !important;
+            }
+            .tag-pill.highlight {
+                background: #e0f2fe !important;
+                border-color: #7dd3fc !important;
+                color: #0369a1 !important;
+            }
+
+            .timeline-item {
+                border-left-color: #cbd5e1 !important;
+                margin-bottom: 8px !important;
+                padding-left: 10px !important;
+            }
+            .timeline-item::before {
+                background: #0284c7 !important;
+                width: 6px !important;
+                height: 6px !important;
+                left: -4px !important;
+            }
+
+            .item-role {
+                color: #0f172a !important;
+                font-size: 12px !important;
+            }
+            .item-period {
+                color: #0284c7 !important;
+                font-size: 10px !important;
+            }
+            .item-bullets {
+                font-size: 10.5px !important;
+                line-height: 1.35 !important;
+            }
+            .tech-inline {
+                background: #f1f5f9 !important;
+                color: #0369a1 !important;
+                border: 1px solid #cbd5e1 !important;
+                font-size: 9px !important;
+            }
+
+            .resume-footer {
+                display: none !important;
+            }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .resume-body {
+                grid-template-columns: 1fr;
+            }
+            .col-left {
+                border-right: none;
+                border-bottom: 1px solid var(--line);
+            }
+            .resume-header {
+                flex-direction: column-reverse;
+                align-items: flex-start;
+            }
+            .name-row h1 {
+                font-size: 24px;
+            }
+            .top-nav {
+                padding: 10px 4vw;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Floating Navigation -->
+    <header class="top-nav">
+        <a href="../index.html#projects" class="back-link">
+            <span>←</span> Back to Portfolio
+        </a>
+        <span class="badge-pill">Ex 01 • One-Page Resume</span>
+        <div class="nav-actions">
+            <button class="btn-nav" id="theme-btn" onclick="toggleTheme()" title="Toggle Light/Dark Theme">
+                <span id="theme-icon">☼</span> <span id="theme-label">Light Mode</span>
+            </button>
+            <button class="btn-nav btn-primary" onclick="window.print()" title="Print or save as 1-page PDF">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect x="6" y="14" width="12" height="8"></rect>
+                </svg>
+                Print / Save PDF
+            </button>
+        </div>
+    </header>
+
+    <!-- Resume Wrapper -->
+    <div class="resume-page-wrapper">
+        <main class="resume-sheet" id="resume-sheet">
+            
+            <!-- Header Section -->
+            <header class="resume-header">
+                <div class="header-main">
+                    <div class="name-row">
+                        <h1>Raushan Kumar</h1>
+                        <span class="title-tagline">Web Developer &amp; CS PG Student</span>
+                    </div>
+                    <p class="summary-subtext">
+                        Master of Computer Applications (MCA) PG student at Pondicherry University. Specializing in responsive front-end engineering, full-stack web architecture, and cloud &amp; cybersecurity fundamentals.
+                    </p>
+                    
+                    <!-- Contact Details Strip -->
+                    <div class="contact-strip">
+                        <span class="contact-item">
+                            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                            <a href="mailto:raushan628721@gmail.com">raushan628721@gmail.com</a>
+                        </span>
+                        <span class="contact-item">
+                            <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                            <a href="https://github.com/raushan628721-lang" target="_blank" rel="noopener noreferrer">github.com/raushan628721-lang</a>
+                        </span>
+                        <span class="contact-item">
+                            <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.64 1.64 0 1 0 0-3.28 1.64 1.64 0 0 0 0 3.28m1.4 9.74v-8.37H5.06v8.37h2.8z"/></svg>
+                            <a href="https://www.linkedin.com/in/raushan-kumar-3b133a384" target="_blank" rel="noopener noreferrer">linkedin.com/in/raushan-kumar</a>
+                        </span>
+                        <span class="contact-item">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+                            <span>Puducherry / Bihar, India</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Avatar Profile -->
+                <div class="header-avatar">
+                    <img src="../profile.jpg" alt="Raushan Kumar" onerror="this.style.display='none'; document.getElementById('avatar-fallback').style.display='flex';">
+                    <div id="avatar-fallback" class="avatar-initials" style="display:none;">RK</div>
+                </div>
+            </header>
+
+            <!-- 2-Column Main Content -->
+            <div class="resume-body">
+                
+                <!-- Left Sidebar: Certifications, Skills, Strengths -->
+                <aside class="col-left">
+                    
+                    <!-- Certifications Section -->
+                    <section>
+                        <h2 class="sec-head">
+                            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                            Certifications
+                        </h2>
+
+                        <div class="cert-card">
+                            <div class="cert-title">
+                                <span class="cert-icon">🛡️</span> Cyber Security
+                            </div>
+                            <div class="cert-issuer">Network Defense &amp; Security Principles</div>
+                        </div>
+
+                        <div class="cert-card">
+                            <div class="cert-title">
+                                <span class="cert-icon">☁️</span> Trust &amp; Security with Google Cloud
+                            </div>
+                            <div class="cert-issuer">Google Cloud Platform Security Architecture</div>
+                        </div>
+
+                        <div class="cert-card">
+                            <div class="cert-title">
+                                <span class="cert-icon">📊</span> Power BI Micro Course
+                            </div>
+                            <div class="cert-issuer">Data Modeling, Analytics &amp; Visual Dashboards</div>
+                        </div>
+                    </section>
+
+                    <!-- Technical Skills -->
+                    <section>
+                        <h2 class="sec-head">
+                            <svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+                            Technical Skills
+                        </h2>
+
+                        <div class="skill-group">
+                            <div class="skill-group-title">Frontend</div>
+                            <div class="tags-cluster">
+                                <span class="tag-pill highlight">HTML5</span>
+                                <span class="tag-pill highlight">CSS3</span>
+                                <span class="tag-pill highlight">JavaScript (ES6+)</span>
+                                <span class="tag-pill">Responsive Design</span>
+                                <span class="tag-pill">DOM APIs</span>
+                                <span class="tag-pill">AJAX / Fetch</span>
+                            </div>
+                        </div>
+
+                        <div class="skill-group">
+                            <div class="skill-group-title">Backend &amp; Languages</div>
+                            <div class="tags-cluster">
+                                <span class="tag-pill highlight">PHP</span>
+                                <span class="tag-pill">Java</span>
+                                <span class="tag-pill">C Language</span>
+                                <span class="tag-pill">RESTful APIs</span>
+                                <span class="tag-pill">Session Auth</span>
+                            </div>
+                        </div>
+
+                        <div class="skill-group">
+                            <div class="skill-group-title">Cloud, Data &amp; Tools</div>
+                            <div class="tags-cluster">
+                                <span class="tag-pill highlight">Google Cloud</span>
+                                <span class="tag-pill highlight">Power BI</span>
+                                <span class="tag-pill highlight">MySQL</span>
+                                <span class="tag-pill">Git / GitHub</span>
+                                <span class="tag-pill">phpMyAdmin</span>
+                                <span class="tag-pill">VS Code</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Core Strengths -->
+                    <section>
+                        <h2 class="sec-head">
+                            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            Core Competencies
+                        </h2>
+                        <ul class="strength-list">
+                            <li>Full-Stack Web Development</li>
+                            <li>Relational Database Architecture</li>
+                            <li>Role-Based Access Control (RBAC)</li>
+                            <li>Cloud Security &amp; Data Hygiene</li>
+                            <li>Clean Code &amp; Documentation</li>
+                        </ul>
+                    </section>
+
+                </aside>
+
+                <!-- Right Column: Education, Academic & Lab Projects -->
+                <div class="col-right">
+
+                    <!-- Education -->
+                    <section>
+                        <h2 class="sec-head">
+                            <svg viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
+                            Education
+                        </h2>
+
+                        <div class="timeline-item">
+                            <div class="item-head">
+                                <span class="item-role">Master of Computer Applications (MCA)</span>
+                                <span class="item-period">2025 – 2027</span>
+                            </div>
+                            <div class="item-org">Department of Computer Science, Pondicherry University (Central University)</div>
+                            <ul class="item-bullets">
+                                <li>Coursework: Internet &amp; Web Technologies, Advanced DBMS, Data Structures, Software Engineering.</li>
+                            </ul>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="item-head">
+                                <span class="item-role">Bachelor of Computer Applications (BCA)</span>
+                                <span class="item-period">2021 – 2024</span>
+                            </div>
+                            <div class="item-org">Magadh University, Bodh Gaya, Bihar</div>
+                            <ul class="item-bullets">
+                                <li>Graduated with distinction. Core foundations in C, C++, Java, Relational Databases, and Web Systems.</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <!-- Selected Key Projects -->
+                    <section>
+                        <h2 class="sec-head">
+                            <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 11.5L7.5 11l1.42-1.41L12 12.67l4.08-4.08L17.5 10 12 15.5z"/></svg>
+                            Key Engineering Projects
+                        </h2>
+
+                        <div class="timeline-item">
+                            <div class="item-head">
+                                <span class="item-role">Enterprise Role-Based Web Portal</span>
+                                <span class="item-period">PHP • MySQL • Auth</span>
+                            </div>
+                            <div class="item-org">Full-Stack Lab Application <span class="tech-inline">CSCA 514</span></div>
+                            <ul class="item-bullets">
+                                <li>Engineered dual-role security (Employee &amp; Admin) with session-based access control and sanitization.</li>
+                                <li>Empowered employees to view departmental rosters while admins perform CRUD actions on workforce data.</li>
+                            </ul>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="item-head">
+                                <span class="item-role">Interactive 20-Question Web Tech Quiz Engine</span>
+                                <span class="item-period">JS ES6+ • DOM API</span>
+                            </div>
+                            <div class="item-org">Client-Side Assessment Platform <span class="tech-inline">Vanilla JS</span></div>
+                            <ul class="item-bullets">
+                                <li>Implemented dynamic question randomization, automated scoring, real-time timer, and result breakdown.</li>
+                                <li>Crafted sleek glassmorphic UI with zero external runtime dependencies for optimal performance.</li>
+                            </ul>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="item-head">
+                                <span class="item-role">Contact Management CRUD Application</span>
+                                <span class="item-period">AJAX • PHP • SQL</span>
+                            </div>
+                            <div class="item-org">Relational Database Contact Book <span class="tech-inline">Async UX</span></div>
+                            <ul class="item-bullets">
+                                <li>Engineered asynchronous record creation, instant live search, category filtering, and modal confirmations.</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <!-- Career Objective / Commitment -->
+                    <section>
+                        <h2 class="sec-head">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+                            Career Focus
+                        </h2>
+                        <ul class="item-bullets">
+                            <li>Passionate about architecting resilient, accessible web solutions combining clean frontend aesthetics with solid database performance and security hygiene.</li>
+                        </ul>
+                    </section>
+
+                </div>
+
+            </div>
+
+            <!-- Footer Strip -->
+            <footer class="resume-footer">
+                <span>© 2026 Raushan Kumar • One-Page Resume</span>
+                <span>Portfolio: <a href="../index.html">raushankumar.dev</a></span>
+            </footer>
+
+        </main>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme') || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            
+            const icon = document.getElementById('theme-icon');
+            const label = document.getElementById('theme-label');
+            if (next === 'light') {
+                icon.textContent = '☾';
+                label.textContent = 'Dark Mode';
+            } else {
+                icon.textContent = '☼';
+                label.textContent = 'Light Mode';
+            }
+        }
+    </script>
+
+</body>
+</html>
